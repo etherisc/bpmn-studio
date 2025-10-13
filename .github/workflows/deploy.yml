@@ -49,6 +49,8 @@ jobs:
       run: |
         pnpm run build
         echo "App built successfully"
+      env:
+        NODE_ENV: production
 
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
