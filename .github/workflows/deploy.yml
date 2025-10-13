@@ -48,8 +48,7 @@ jobs:
     - name: Build Process Editor App
       run: |
         pnpm run build
-        mkdir -p _site/app
-        cp -r dist/* _site/app/
+        echo "App built successfully"
 
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
@@ -64,6 +63,13 @@ jobs:
         bundle exec jekyll build --destination ../_site
       env:
         JEKYLL_ENV: production
+
+    - name: Copy App to Jekyll Site
+      run: |
+        mkdir -p _site/app
+        cp -r dist/* _site/app/
+        echo "App copied to _site/app/"
+        ls -la _site/app/
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
