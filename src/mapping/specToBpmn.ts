@@ -19,6 +19,12 @@ export class SpecToBpmnMapper {
     let currentX = 100;
     let currentY = 100;
 
+    // Create Start Event first (visual only)
+    const startEventId = generateUUID();
+    this.createStartEvent(processElement, startEventId);
+    positions.set(startEventId, { x: currentX, y: currentY });
+    currentX += 200;
+
     // Create tasks and end events
     const elementMap = new Map<string, string>(); // stateName -> elementId
     
@@ -39,6 +45,12 @@ export class SpecToBpmnMapper {
         currentY += 150;
       }
     });
+
+    // Create sequence flow from Start Event to initial state
+    const initialStateId = elementMap.get(spec.initial);
+    if (initialStateId) {
+      this.createSequenceFlow(processElement, startEventId, initialStateId, 'START', 'start');
+    }
 
     // Create sequence flows
     Object.entries(spec.states).forEach(([stateName, state]) => {
@@ -107,6 +119,18 @@ export class SpecToBpmnMapper {
     
     doc.documentElement.appendChild(process);
     return process;
+  }
+
+  private createStartEvent(processElement: Element, elementId: string): void {
+    const startEvent = processElement.ownerDocument!.createElementNS(
+      'http://www.omg.org/spec/BPMN/20100524/MODEL', 
+      'bpmn:startEvent'
+    );
+    
+    startEvent.setAttribute('id', elementId);
+    startEvent.setAttribute('name', 'Start');
+    
+    processElement.appendChild(startEvent);
   }
 
   private createTask(processElement: Element, elementId: string, stateName: string, state: StateNode): void {

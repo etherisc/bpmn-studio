@@ -50,6 +50,19 @@ body {
   cursor: not-allowed;
 }
 
+.toolbar-link {
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-link:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
 .toolbar-separator {
   width: 1px;
   height: 24px;

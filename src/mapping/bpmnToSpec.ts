@@ -151,8 +151,25 @@ export class BpmnToSpecMapper {
     tasks: Array<{ id: string, element: Element }>, 
     sequenceFlows: Array<{ id: string, source: string, target: string, element: Element }>
   ): string | null {
-    // Find tasks that are not targets of any sequence flow
-    const targetIds = new Set(sequenceFlows.map(flow => flow.target));
+    // First, check if there's a Start Event pointing to a task
+    const startEvents = this.extractStartEvents(tasks[0]?.element.ownerDocument?.documentElement || document);
+    if (startEvents.length > 0) {
+      const startEvent = startEvents[0];
+      const outgoingFlow = sequenceFlows.find(flow => flow.source === startEvent.id);
+      if (outgoingFlow) {
+        const targetTask = tasks.find(task => task.id === outgoingFlow.target);
+        if (targetTask) {
+          const stateName = this.getDataAttribute(targetTask.element, 'data-state-name');
+          return stateName || targetTask.id;
+        }
+      }
+    }
+
+    // Fallback: Find tasks that are not targets of any sequence flow (excluding flows from start events)
+    const nonStartFlows = sequenceFlows.filter(flow => 
+      !startEvents.some(start => start.id === flow.source)
+    );
+    const targetIds = new Set(nonStartFlows.map(flow => flow.target));
     
     for (const task of tasks) {
       if (!targetIds.has(task.id)) {
@@ -162,6 +179,20 @@ export class BpmnToSpecMapper {
     }
 
     return null;
+  }
+
+  private extractStartEvents(processElement: Element): Array<{ id: string, element: Element }> {
+    const startEvents: Array<{ id: string, element: Element }> = [];
+    const startEventElements = processElement.querySelectorAll('startEvent, bpmn\\:startEvent, bpmn2\\:startEvent');
+    
+    startEventElements.forEach(startEvent => {
+      const id = startEvent.getAttribute('id');
+      if (id) {
+        startEvents.push({ id, element: startEvent });
+      }
+    });
+
+    return startEvents;
   }
 
   private buildStates(

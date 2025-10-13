@@ -131,7 +131,8 @@ export class ModelerHost {
         await this.modeler.importXML(xml);
       }
       
-      this.fitViewport();
+      // Center the diagram after loading
+      setTimeout(() => this.centerDiagram(), 100);
     } catch (error) {
       console.error('Failed to load template:', error);
       throw error;
@@ -145,7 +146,8 @@ export class ModelerHost {
 
     try {
       await this.modeler.importXML(xml);
-      this.fitViewport();
+      // Center the diagram after loading
+      setTimeout(() => this.centerDiagram(), 100);
     } catch (error) {
       console.error('Failed to load BPMN:', error);
       throw error;
@@ -166,11 +168,74 @@ export class ModelerHost {
     }
   }
 
-  private fitViewport(): void {
+  fitViewport(): void {
     if (!this.modeler) return;
     
     const canvas = this.modeler.get('canvas') as any;
-    canvas.zoom('fit-viewport');
+    canvas.zoom('fit-viewport', 'auto');
+  }
+
+  private centerDiagram(): void {
+    if (!this.modeler) return;
+    
+    try {
+      const canvas = this.modeler.get('canvas') as any;
+      const elementRegistry = this.modeler.get('elementRegistry') as any;
+      
+      // Get all elements
+      const elements = elementRegistry.getAll();
+      const shapes = elements.filter((element: any) => element.type !== 'bpmn:Process');
+      
+      if (shapes.length > 0) {
+        // Calculate bounding box of all elements
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        
+        shapes.forEach((shape: any) => {
+          if (shape.x !== undefined && shape.y !== undefined) {
+            minX = Math.min(minX, shape.x);
+            minY = Math.min(minY, shape.y);
+            maxX = Math.max(maxX, shape.x + (shape.width || 0));
+            maxY = Math.max(maxY, shape.y + (shape.height || 0));
+          }
+        });
+        
+        if (minX !== Infinity) {
+          // Calculate center point
+          const centerX = (minX + maxX) / 2;
+          const centerY = (minY + maxY) / 2;
+          
+          // Get canvas dimensions
+          const container = canvas.getContainer();
+          const containerRect = container.getBoundingClientRect();
+          const viewboxCenter = {
+            x: containerRect.width / 2,
+            y: containerRect.height / 2
+          };
+          
+          // Calculate offset to center the diagram
+          const offsetX = viewboxCenter.x - centerX;
+          const offsetY = viewboxCenter.y - centerY;
+          
+          // Apply centering with smooth transition
+          canvas.viewbox({
+            x: -offsetX,
+            y: -offsetY,
+            width: containerRect.width,
+            height: containerRect.height
+          });
+          
+          console.log('Diagram centered');
+        }
+      } else {
+        // No elements, just center the viewport
+        canvas.zoom('fit-viewport', 'auto');
+      }
+    } catch (error) {
+      console.error('Failed to center diagram:', error);
+      // Fallback to fit viewport
+      const canvas = this.modeler.get('canvas') as any;
+      canvas.zoom('fit-viewport', 'auto');
+    }
   }
 
   private enableOfficialGrid(): void {

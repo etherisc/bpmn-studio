@@ -23,6 +23,7 @@ export class ProcessEditorRulesProvider {
 
     // Only allow our supported element types
     const allowedTypes = [
+      'bpmn:StartEvent', // Visual only - for usability
       'bpmn:Task',
       'bpmn:EndEvent',
       'bpmn:BoundaryEvent',
@@ -34,6 +35,11 @@ export class ProcessEditorRulesProvider {
     if (!allowedTypes.includes(shape.type)) {
       console.warn(`Element type ${shape.type} is not allowed in this editor. Allowed types: ${allowedTypes.join(', ')}`);
       throw new Error(`Element type ${shape.type} is not allowed in this editor`);
+    }
+
+    // Special validation for Start Events
+    if (shape.type === 'bpmn:StartEvent') {
+      this.validateSingleStartEvent(context);
     }
 
     // Additional validation for boundary events
@@ -66,8 +72,21 @@ export class ProcessEditorRulesProvider {
       throw new Error('End Events cannot have outgoing flows');
     }
 
+    // Start events can only connect to Tasks and can only have one outgoing flow
+    if (source.type === 'bpmn:StartEvent') {
+      if (target.type !== 'bpmn:Task') {
+        throw new Error('Start Events can only connect to Tasks');
+      }
+      
+      // Check if start event already has an outgoing flow
+      const outgoing = source.businessObject?.outgoing || [];
+      if (outgoing.length > 0) {
+        throw new Error('Start Events can only have one outgoing flow');
+      }
+    }
+
     // Validate source and target types
-    const allowedSourceTypes = ['bpmn:Task', 'bpmn:BoundaryEvent'];
+    const allowedSourceTypes = ['bpmn:StartEvent', 'bpmn:Task', 'bpmn:BoundaryEvent'];
     const allowedTargetTypes = ['bpmn:Task', 'bpmn:EndEvent'];
 
     if (!allowedSourceTypes.includes(source.type)) {
@@ -126,6 +145,29 @@ export class ProcessEditorRulesProvider {
       if (existingEvent === newEvent) {
         throw new Error(`Duplicate event '${newEvent}' from the same state is not allowed`);
       }
+    }
+  }
+
+  private validateSingleStartEvent(context: any): void {
+    // Check if there's already a start event in the process
+    const elementRegistry = context.elementRegistry || this.getElementRegistry();
+    if (elementRegistry) {
+      const existingStartEvents = elementRegistry.filter((element: any) => 
+        element.type === 'bpmn:StartEvent'
+      );
+      
+      if (existingStartEvents.length > 0) {
+        throw new Error('Only one Start Event is allowed per diagram');
+      }
+    }
+  }
+
+  private getElementRegistry(): any {
+    // Helper to get element registry from the modeler
+    try {
+      return this.eventBus._injector?.get?.('elementRegistry');
+    } catch {
+      return null;
     }
   }
 }

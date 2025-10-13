@@ -51,6 +51,25 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element: any)
     };
   }
 
+  // Actions for Start Events
+  if (element.type === 'bpmn:StartEvent') {
+    Object.assign(actions, {
+      'append.task': appendAction(
+        'bpmn:Task', 'bpmn-icon-task', 'Append Task', {}
+      ),
+      'connect': {
+        group: 'connect',
+        className: 'bpmn-icon-connection-multi',
+        title: 'Connect to Task',
+        action: {
+          click: function(event: any, element: any) {
+            connect.start(event, element);
+          }
+        }
+      }
+    });
+  }
+
   // Actions for Tasks
   if (element.type === 'bpmn:Task') {
     Object.assign(actions, {

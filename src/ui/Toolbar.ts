@@ -63,6 +63,11 @@ export class Toolbar {
       
       <div class="toolbar-separator"></div>
       
+      <a href="https://etherisc.github.io/bpmn-studio/" target="_blank" class="toolbar-button toolbar-link">📖 Docs</a>
+      <a href="https://github.com/etherisc/bpmn-studio" target="_blank" class="toolbar-button toolbar-link">🔗 GitHub</a>
+      
+      <div class="toolbar-separator"></div>
+      
       <span class="toolbar-status">Ready</span>
     `;
   }

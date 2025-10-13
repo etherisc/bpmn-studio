@@ -51,6 +51,9 @@ CustomPaletteProvider.prototype.getPaletteEntries = function() {
 
   // ONLY return our allowed elements - this completely replaces the default palette
   Object.assign(actions, {
+    'create.start-event': createAction(
+      'bpmn:StartEvent', 'event', 'bpmn-icon-start-event-none', 'Create Start (Visual Only)'
+    ),
     'create.task': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-task', 'Create Task'
     ),
