@@ -18,6 +18,7 @@
     "bpmn-js-properties-panel": "^5.0.0",
     "bpmnlint": "^10.0.0",
     "diagram-js": "^14.0.0",
+    "diagram-js-grid": "^1.1.0",
     "jszip": "^3.10.1"
   },
   "devDependencies": {

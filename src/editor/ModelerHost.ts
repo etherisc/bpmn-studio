@@ -7,6 +7,7 @@ import {
 import RestrictedPaletteModule from './RestrictedPaletteModule';
 import RestrictedContextPadModule from './RestrictedContextPadModule';
 import RulesProviderModule from './RulesProvider';
+import GridModule from 'diagram-js-grid';
 // import PropertiesBindingsModule from './PropertiesBindings'; // Temporarily disabled
 import { LintingIntegration } from './LintingIntegration';
 import { ValidationIssue } from '../ui/ValidationPane';
@@ -36,6 +37,7 @@ export class ModelerHost {
       additionalModules: [
         BpmnPropertiesPanelModule,
         BpmnPropertiesProviderModule,
+        GridModule, // Official grid background
         RestrictedPaletteModule, // Custom palette with only allowed elements
         RestrictedContextPadModule, // Custom context pad with only allowed actions
         RulesProviderModule, // Keep rules to block forbidden elements
@@ -61,8 +63,8 @@ export class ModelerHost {
     // Initialize auto-save
     this.autoSaveService = new AutoSaveService(this.modeler);
     
-    // Enable grid background
-    this.enableGridBackground();
+    // Enable grid background (official implementation)
+    this.enableOfficialGrid();
   }
 
   private setupEventListeners(): void {
@@ -171,49 +173,18 @@ export class ModelerHost {
     canvas.zoom('fit-viewport');
   }
 
-  private enableGridBackground(): void {
+  private enableOfficialGrid(): void {
     if (!this.modeler) return;
     
     try {
-      const canvas = this.modeler.get('canvas') as any;
-      const svg = canvas._svg;
-      
-      // Create grid pattern
-      const defs = svg.querySelector('defs') || svg.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'defs'));
-      
-      const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
-      pattern.setAttribute('id', 'grid');
-      pattern.setAttribute('width', '20');
-      pattern.setAttribute('height', '20');
-      pattern.setAttribute('patternUnits', 'userSpaceOnUse');
-      
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', 'M 20 0 L 0 0 0 20');
-      path.setAttribute('fill', 'none');
-      path.setAttribute('stroke', '#e1e5e9');
-      path.setAttribute('stroke-width', '0.5');
-      path.setAttribute('opacity', '0.8');
-      
-      pattern.appendChild(path);
-      defs.appendChild(pattern);
-      
-      // Apply grid background to viewport
-      const viewport = svg.querySelector('.viewport') || svg.querySelector('g');
-      if (viewport) {
-        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', '-5000');
-        rect.setAttribute('y', '-5000');
-        rect.setAttribute('width', '10000');
-        rect.setAttribute('height', '10000');
-        rect.setAttribute('fill', 'url(#grid)');
-        
-        // Insert as first child so it's behind everything else
-        viewport.insertBefore(rect, viewport.firstChild);
+      // Use the official grid service from diagram-js-grid
+      const grid = this.modeler.get('grid') as any;
+      if (grid && grid.setVisible) {
+        grid.setVisible(true);
+        console.log('Official grid background enabled');
       }
-      
-      console.log('Grid background enabled');
     } catch (error) {
-      console.error('Failed to enable grid background:', error);
+      console.error('Failed to enable official grid background:', error);
     }
   }
 
@@ -241,17 +212,12 @@ export class ModelerHost {
     if (!this.modeler) return;
     
     try {
-      const canvas = this.modeler.get('canvas') as any;
-      const svg = canvas._svg;
-      const gridRect = svg.querySelector('rect[fill="url(#grid)"]');
-      
-      if (gridRect) {
-        // Grid is visible, hide it
-        gridRect.style.display = gridRect.style.display === 'none' ? '' : 'none';
-        console.log('Grid toggled:', gridRect.style.display === 'none' ? 'hidden' : 'visible');
-      } else {
-        // Grid doesn't exist, create it
-        this.enableGridBackground();
+      // Use the official grid service from diagram-js-grid
+      const grid = this.modeler.get('grid') as any;
+      if (grid && grid.isVisible && grid.setVisible) {
+        const isVisible = grid.isVisible();
+        grid.setVisible(!isVisible);
+        console.log('Grid toggled:', !isVisible ? 'visible' : 'hidden');
       }
     } catch (error) {
       console.error('Failed to toggle grid:', error);
