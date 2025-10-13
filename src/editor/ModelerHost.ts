@@ -115,7 +115,7 @@ export class ModelerHost {
       
       if (!hasAutoSave) {
         // No auto-save found, load blank template
-        const response = await fetch('/assets/templates/blank.bpmn');
+        const response = await fetch('./templates/blank.bpmn');
         if (!response.ok) {
           throw new Error(`Failed to fetch template: ${response.statusText}`);
         }
