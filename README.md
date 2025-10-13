@@ -159,6 +159,26 @@ schema/
   machine-spec.v2.json   # JSON schema for validation
 ```
 
+## Documentation
+
+### 📖 User Documentation
+Complete user guides and API reference available at:
+**[https://etherisc.github.io/bpmn-studio/](https://etherisc.github.io/bpmn-studio/)**
+
+- **Getting Started**: Step-by-step tutorials
+- **Process Modeling**: Advanced techniques
+- **API Reference**: TypeScript interfaces and JSON schema
+- **Validation Rules**: Complete rule reference
+
+### 🔧 Developer Documentation
+Internal project documentation for contributors:
+**[internal-docs/](internal-docs/)**
+
+- **Development Setup**: Environment configuration
+- **Contributing Guide**: Code standards and workflow
+- **Architecture Decisions**: Technical design choices
+- **Meeting Notes**: Project history and decisions
+
 ## Browser Compatibility
 
 - Modern browsers with ES2020 support
@@ -172,6 +192,7 @@ MIT License - see individual library licenses for bpmn-js components.
 ## Dependencies
 
 - **bpmn-js**: BPMN modeling and rendering
+- **diagram-js-grid**: Official grid background
 - **bpmn-js-properties-panel**: Properties editing
 - **@bpmn-io/properties-panel**: Properties panel framework
 - **bpmnlint**: BPMN validation engine

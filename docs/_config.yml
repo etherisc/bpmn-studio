@@ -92,6 +92,7 @@ exclude:
   - dist/
   - src/
   - test/
+  - internal-docs/
   - "*.config.*"
   - package.json
   - pnpm-lock.yaml
