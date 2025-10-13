@@ -59,6 +59,10 @@ export class Toolbar {
       
       <div class="toolbar-separator"></div>
       
+      <button class="toolbar-button" data-action="toggle-grid">Toggle Grid</button>
+      
+      <div class="toolbar-separator"></div>
+      
       <span class="toolbar-status">Ready</span>
     `;
   }
@@ -103,6 +107,9 @@ export class Toolbar {
           break;
         case 'clear-autosave':
           await this.handleClearAutoSave();
+          break;
+        case 'toggle-grid':
+          this.handleToggleGrid();
           break;
       }
       
@@ -227,6 +234,11 @@ export class Toolbar {
     } else {
       this.setStatus('No auto-save data found');
     }
+  }
+
+  private handleToggleGrid(): void {
+    this.modelerHost.toggleGrid();
+    this.setStatus('Grid toggled');
   }
 
   private async calculateSHA256(content: string): Promise<string> {
