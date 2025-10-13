@@ -4,12 +4,11 @@
  */
 
 export class ProcessPropertiesProvider {
-  static $inject = ['eventBus', 'modeling', 'elementRegistry'];
+  static $inject = ['eventBus', 'modeling'];
 
   constructor(
     private eventBus: any, 
-    private modeling: any, 
-    private _elementRegistry: any
+    private modeling: any
   ) {
     this.init();
   }
@@ -234,54 +233,7 @@ export class ProcessPropertiesProvider {
     });
   }
 
-  private validateStateName(value: string): string | null {
-    if (!value) {
-      return 'State name is required';
-    }
-    
-    if (!/^[a-z][a-z0-9_]*$/.test(value)) {
-      return 'State name must be snake_case (lowercase, underscores allowed)';
-    }
-    
-    return null;
-  }
-
-  private validateEventName(value: string): string | null {
-    if (!value) {
-      return 'Event name is required';
-    }
-    
-    if (!/^[A-Z][A-Z0-9_]*$/.test(value)) {
-      return 'Event name must be UPPER_SNAKE_CASE';
-    }
-    
-    return null;
-  }
-
-  private validateIsoDuration(value: string): string | null {
-    if (!value) {
-      return null; // Optional
-    }
-    
-    if (!/^P(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+S)?)?$/.test(value)) {
-      return 'Invalid ISO 8601 duration format (e.g., P14D, PT2H30M)';
-    }
-    
-    return null;
-  }
-
-  private validateIsoDateTime(value: string): string | null {
-    if (!value) {
-      return null; // Optional
-    }
-    
-    try {
-      new Date(value).toISOString();
-      return null;
-    } catch {
-      return 'Invalid ISO 8601 datetime format';
-    }
-  }
+  // Validation methods removed - handled by bpmnlint rules instead
 }
 
 // Export as a module for bpmn-js

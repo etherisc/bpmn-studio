@@ -33,7 +33,7 @@ export class ProcessEditorRulesProvider {
 
     if (!allowedTypes.includes(shape.type)) {
       console.warn(`Element type ${shape.type} is not allowed in this editor. Allowed types: ${allowedTypes.join(', ')}`);
-      return false; // Prevent the action instead of throwing
+      throw new Error(`Element type ${shape.type} is not allowed in this editor`);
     }
 
     // Additional validation for boundary events

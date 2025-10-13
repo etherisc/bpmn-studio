@@ -4,8 +4,8 @@
  */
 
 function CustomContextPadProvider(
-  contextPad, modeling, connect, create, elementFactory, autoPlace, translate
-) {
+  contextPad: any, modeling: any, connect: any, create: any, elementFactory: any, autoPlace: any, translate: any
+): void {
   this._contextPad = contextPad;
   this._modeling = modeling;
   this._connect = connect;
@@ -21,17 +21,17 @@ CustomContextPadProvider.$inject = [
   'contextPad', 'modeling', 'connect', 'create', 'elementFactory', 'autoPlace', 'translate'
 ];
 
-CustomContextPadProvider.prototype.getContextPadEntries = function(element) {
+CustomContextPadProvider.prototype.getContextPadEntries = function(element: any) {
   const actions = {};
   const modeling = this._modeling;
   const connect = this._connect;
-  const create = this._create;
+  // const create = this._create;
   const elementFactory = this._elementFactory;
   const autoPlace = this._autoPlace;
-  const translate = this._translate;
+  // const translate = this._translate;
 
-  function appendAction(type, className, title, options) {
-    function appendListener(event, element) {
+  function appendAction(type: any, className: any, title: any, options?: any) {
+    function appendListener(_event: any, element: any) {
       const shape = elementFactory.createShape(Object.assign({ type: type }, options));
       
       // Use autoPlace to properly position and connect the new element
@@ -55,17 +55,17 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element) {
   if (element.type === 'bpmn:Task') {
     Object.assign(actions, {
       'append.task': appendAction(
-        'bpmn:Task', 'bpmn-icon-task', 'Append Task'
+        'bpmn:Task', 'bpmn-icon-task', 'Append Task', {}
       ),
       'append.end-event': appendAction(
-        'bpmn:EndEvent', 'bpmn-icon-end-event-none', 'Append End Event'
+        'bpmn:EndEvent', 'bpmn-icon-end-event-none', 'Append End Event', {}
       ),
       'connect': {
         group: 'connect',
         className: 'bpmn-icon-connection-multi',
         title: 'Connect using Sequence Flow',
         action: {
-          click: function(event, element) {
+          click: function(event: any, element: any) {
             connect.start(event, element);
           }
         }
@@ -75,7 +75,7 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element) {
         className: 'bpmn-icon-intermediate-event-catch-timer',
         title: 'Add Timer Boundary Event',
         action: {
-          click: function(event, element) {
+          click: function(_event: any, element: any) {
             const boundaryEvent = elementFactory.createShape({
               type: 'bpmn:BoundaryEvent',
               eventDefinitionType: 'bpmn:TimerEventDefinition'
@@ -110,7 +110,7 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element) {
         className: 'bpmn-icon-connection-multi',
         title: 'Connect using Sequence Flow',
         action: {
-          click: function(event, element) {
+          click: function(event: any, element: any) {
             connect.start(event, element);
           }
         }
@@ -122,17 +122,17 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element) {
   if (element.type === 'bpmn:BoundaryEvent') {
     Object.assign(actions, {
       'append.task': appendAction(
-        'bpmn:Task', 'bpmn-icon-task', 'Append Task'
+        'bpmn:Task', 'bpmn-icon-task', 'Append Task', {}
       ),
       'append.end-event': appendAction(
-        'bpmn:EndEvent', 'bpmn-icon-end-event-none', 'Append End Event'
+        'bpmn:EndEvent', 'bpmn-icon-end-event-none', 'Append End Event', {}
       ),
       'connect': {
         group: 'connect',
         className: 'bpmn-icon-connection-multi',
         title: 'Connect using Sequence Flow',
         action: {
-          click: function(event, element) {
+          click: function(event: any, element: any) {
             connect.start(event, element);
           }
         }
@@ -147,7 +147,7 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element) {
       className: 'bpmn-icon-trash',
       title: 'Remove',
       action: {
-        click: function(event, element) {
+        click: function(_event: any, element: any) {
           modeling.removeElements([element]);
         }
       }

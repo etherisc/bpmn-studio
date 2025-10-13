@@ -4,9 +4,9 @@
  */
 
 function CustomPaletteProvider(
-  palette, create, elementFactory, 
-  spaceTool, lassoTool, globalConnect, translate
-) {
+  palette: any, create: any, elementFactory: any, 
+  spaceTool: any, lassoTool: any, globalConnect: any, translate: any
+): void {
   this._palette = palette;
   this._create = create;
   this._elementFactory = elementFactory;
@@ -30,10 +30,10 @@ CustomPaletteProvider.prototype.getPaletteEntries = function() {
   const spaceTool = this._spaceTool;
   const lassoTool = this._lassoTool;
   const globalConnect = this._globalConnect;
-  const translate = this._translate;
+  // const translate = this._translate;
 
-  function createAction(type, group, className, title) {
-    function createListener(event) {
+  function createAction(type: any, group: any, className: any, title: any) {
+    function createListener(event: any) {
       const shape = elementFactory.createShape({ type: type });
       create.start(event, shape);
     }
@@ -65,32 +65,32 @@ CustomPaletteProvider.prototype.getPaletteEntries = function() {
       group: 'tools',
       className: 'bpmn-icon-lasso-tool',
       title: 'Activate Lasso Tool',
-      action: {
-        click: function(event) {
-          lassoTool.activateSelection(event);
+        action: {
+          click: function(event: any) {
+            lassoTool.activateSelection(event);
+          }
+        }
+      },
+      'space-tool': {
+        group: 'tools',
+        className: 'bpmn-icon-space-tool',
+        title: 'Activate Space Tool',
+        action: {
+          click: function(event: any) {
+            spaceTool.activateSelection(event);
+          }
+        }
+      },
+      'global-connect-tool': {
+        group: 'tools',
+        className: 'bpmn-icon-connection-multi',
+        title: 'Connect Elements',
+        action: {
+          click: function(event: any) {
+            globalConnect.start(event);
+          }
         }
       }
-    },
-    'space-tool': {
-      group: 'tools',
-      className: 'bpmn-icon-space-tool',
-      title: 'Activate Space Tool',
-      action: {
-        click: function(event) {
-          spaceTool.activateSelection(event);
-        }
-      }
-    },
-    'global-connect-tool': {
-      group: 'tools',
-      className: 'bpmn-icon-connection-multi',
-      title: 'Connect Elements',
-      action: {
-        click: function(event) {
-          globalConnect.start(event);
-        }
-      }
-    }
   });
 
   return actions;

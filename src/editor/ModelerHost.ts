@@ -7,7 +7,7 @@ import {
 import RestrictedPaletteModule from './RestrictedPaletteModule';
 import RestrictedContextPadModule from './RestrictedContextPadModule';
 import RulesProviderModule from './RulesProvider';
-import PropertiesBindingsModule from './PropertiesBindings';
+// import PropertiesBindingsModule from './PropertiesBindings'; // Temporarily disabled
 import { LintingIntegration } from './LintingIntegration';
 import { ValidationIssue } from '../ui/ValidationPane';
 import { AutoSaveService } from '../lib/AutoSaveService';
