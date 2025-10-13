@@ -96,3 +96,6 @@ exclude:
   - package.json
   - pnpm-lock.yaml
   - .eslintrc.cjs
+  - vendor/
+  - Gemfile
+  - Gemfile.lock
