@@ -1,0 +1,98 @@
+# Jekyll configuration for Process Editor documentation
+title: Process Editor
+description: Standalone visual BPMN editor for insurance process flows
+baseurl: "/bpmn-studio"
+url: "https://etherisc.github.io"
+
+# Theme
+theme: just-the-docs
+remote_theme: just-the-docs/just-the-docs
+
+# Color scheme
+color_scheme: light
+
+# Logo and favicon
+logo: "/assets/images/logo.png"
+
+# Search
+search_enabled: true
+search:
+  heading_level: 2
+  previews: 3
+  preview_words_before: 5
+  preview_words_after: 10
+  tokenizer_separator: /[\s/]+/
+  rel_url: true
+  button: false
+
+# Navigation
+nav_sort: case_insensitive
+
+# Aux links
+aux_links:
+  "Process Editor on GitHub":
+    - "https://github.com/etherisc/bpmn-studio"
+  "Live Demo":
+    - "https://etherisc.github.io/bpmn-studio/app/"
+
+# Footer
+footer_content: "Copyright &copy; 2025 Etherisc. Distributed under the <a href=\"https://github.com/etherisc/bpmn-studio/blob/main/LICENSE\">MIT License</a>."
+
+# Plugins
+plugins:
+  - jekyll-default-layout
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-titles-from-headings
+
+# Markdown settings
+markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+
+# Collections
+collections:
+  guides:
+    permalink: "/:collection/:name/"
+    output: true
+  api:
+    permalink: "/:collection/:name/"
+    output: true
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "guides"
+    values:
+      layout: "default"
+      nav_order: 3
+  - scope:
+      path: ""
+      type: "api"
+    values:
+      layout: "default"
+      nav_order: 4
+
+# Exclude files
+exclude:
+  - node_modules/
+  - .pnpm-store/
+  - dist/
+  - src/
+  - test/
+  - "*.config.*"
+  - package.json
+  - pnpm-lock.yaml
+  - .eslintrc.cjs
