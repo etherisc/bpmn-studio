@@ -1,0 +1,12 @@
+{
+  "extends": [],
+  "rules": {
+    "subset-only": "error",
+    "single-initial-task": "error", 
+    "deterministic-transitions": "error",
+    "terminal-no-outgoing": "error",
+    "timer-valid": "error",
+    "unique-ids": "error",
+    "state-name-valid": "error"
+  }
+}

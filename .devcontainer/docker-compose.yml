@@ -1,0 +1,48 @@
+services:
+  bpmn-studio:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        # Use Node 20 LTS
+        NODE_VERSION: "20"
+        # Install pnpm globally
+        INSTALL_PNPM: "true"
+        # User configuration
+        USER_UID: 1000
+        USER_GID: 1000
+    
+    volumes:
+      # Mount the workspace
+      - ..:/workspace:cached
+      
+      # Persist pnpm store
+      - pnpm-store:/home/node/.local/share/pnpm
+      
+      # Persist git config and SSH keys (optional)
+      # - ~/.gitconfig:/home/node/.gitconfig:ro
+      # - ~/.ssh:/home/node/.ssh:ro
+      
+      # Persist bash history
+      - bash-history:/home/node/.bash_history
+
+    # Forward ports for development
+    ports:
+      - "5173"   # Vite dev server (dynamic host port)
+      - "4173"   # Vite preview (dynamic host port)
+
+    # Keep container running
+    command: sleep infinity
+    
+    # Environment variables
+    environment:
+      - NODE_ENV=development
+
+    # Use init to handle signals properly
+    init: true
+
+
+
+volumes:
+  pnpm-store:
+  bash-history: 

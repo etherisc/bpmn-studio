@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/machine-spec.v2.schema.json",
+  "title": "MachineSpec v2",
+  "type": "object",
+  "required": ["id", "version", "initial", "states"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "version": { "type": "integer", "minimum": 1 },
+    "initial": { "type": "string", "minLength": 1 },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "documentation": { "type": "string" },
+        "lanes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "states": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "enum": ["task", "end"] },
+          "on": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                { "type": "string", "minLength": 1 },
+                {
+                  "type": "object",
+                  "required": ["target"],
+                  "properties": {
+                    "id": { "type": "string" },
+                    "target": { "type": "string", "minLength": 1 },
+                    "guard": { "type": "string" },
+                    "actions": {
+                      "type": "array",
+                      "items": { "type": "string", "minLength": 1 },
+                      "uniqueItems": true
+                    },
+                    "condition": { "type": "string" }
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "timers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "type", "event"],
+              "properties": {
+                "id": { "type": "string", "minLength": 1 },
+                "type": { "enum": ["DURATION", "DATE"] },
+                "iso": { "type": "string" },
+                "at": { "type": "string", "format": "date-time" },
+                "event": { "type": "string", "minLength": 1 }
+              },
+              "allOf": [
+                {
+                  "if": { "properties": { "type": { "const": "DURATION" } } },
+                  "then": { "required": ["iso"] }
+                },
+                {
+                  "if": { "properties": { "type": { "const": "DATE" } } },
+                  "then": { "required": ["at"] }
+                }
+              ],
+              "additionalProperties": false
+            }
+          },
+          "metadata": { "type": "object", "additionalProperties": true }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

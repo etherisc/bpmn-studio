@@ -1,0 +1,53 @@
+{
+  "name": "BPMN Studio",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "bpmn-studio",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+
+  // Use Node.js feature but disable additional tools
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20",
+      "installTools": false
+    }
+  },
+
+
+  // Minimal extensions - just the essentials
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "npm.packageManager": "pnpm"
+      }
+    }
+  },
+
+  // Port forwarding for development servers
+  "forwardPorts": [5173, 4173],
+  "portsAttributes": {
+    "5173": {
+      "label": "Frontend Dev Server",
+      "onAutoForward": "notify"
+    },
+    "4173": {
+      "label": "Frontend Preview Server",
+      "onAutoForward": "notify"
+    }
+  },
+  
+  // Run post-create script to install dependencies and setup environment
+  "postCreateCommand": "bash .devcontainer/scripts/post-create.sh",
+  
+  // Use node user
+  "remoteUser": "node",
+
+  // Essential mounts only
+  "mounts": [
+    "source=bpmn-studio-pnpm-store,target=/home/node/.local/share/pnpm,type=volume"
+  ]
+}

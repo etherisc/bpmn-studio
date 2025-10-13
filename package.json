@@ -1,0 +1,44 @@
+{
+  "name": "process-editor",
+  "version": "1.0.0",
+  "description": "Standalone visual BPMN editor for insurance process flows",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "dependencies": {
+    "@bpmn-io/properties-panel": "^3.33.0",
+    "ajv": "^8.12.0",
+    "bpmn-js": "^17.0.2",
+    "bpmn-js-bpmnlint": "^0.21.0",
+    "bpmn-js-properties-panel": "^5.0.0",
+    "bpmnlint": "^10.0.0",
+    "diagram-js": "^14.0.0",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^27.0.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "jsdom": "^27.0.0",
+    "typescript": "^5.0.2",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "keywords": [
+    "bpmn",
+    "process",
+    "editor",
+    "insurance",
+    "workflow"
+  ],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@9.0.0"
+}

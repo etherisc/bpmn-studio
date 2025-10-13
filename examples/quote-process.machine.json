@@ -1,0 +1,59 @@
+{
+  "id": "quote",
+  "version": 1,
+  "initial": "created",
+  "metadata": {
+    "documentation": "Insurance quote lifecycle process",
+    "lanes": {
+      "Customer": ["created"],
+      "Reviewer": ["approved"],
+      "Finance": ["ready_for_collection"]
+    }
+  },
+  "states": {
+    "created": {
+      "id": "task_created",
+      "type": "task",
+      "on": {
+        "APPROVE": {
+          "id": "flow_approve",
+          "target": "approved",
+          "guard": "isReviewer"
+        }
+      }
+    },
+    "approved": {
+      "id": "task_approved",
+      "type": "task",
+      "on": {
+        "READY_FOR_COLLECTION": {
+          "id": "flow_ready",
+          "target": "ready_for_collection"
+        }
+      },
+      "timers": [
+        {
+          "id": "timer_collection",
+          "type": "DURATION",
+          "iso": "P14D",
+          "event": "COLLECTION_EXPIRED"
+        }
+      ]
+    },
+    "ready_for_collection": {
+      "id": "task_ready",
+      "type": "task",
+      "on": {
+        "PAY_FULL": {
+          "id": "flow_pay",
+          "target": "paid_full",
+          "actions": ["recordPayment"]
+        }
+      }
+    },
+    "paid_full": {
+      "id": "end_paid",
+      "type": "end"
+    }
+  }
+}
