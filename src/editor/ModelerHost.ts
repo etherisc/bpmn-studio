@@ -296,7 +296,6 @@ export class ModelerHost {
           // Fallback: try to toggle visibility
           grid.visible = !grid.visible;
         }
-      } else {
       }
     } catch (error) {
       console.error('Failed to toggle grid:', error);
