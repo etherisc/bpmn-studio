@@ -179,17 +179,7 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element: any)
         title: 'Add Lane Below',
         action: {
           click: function(_event: any, element: any) {
-            modeling.addLane(element, 'below');
-          }
-        }
-      },
-      'lane-divide-two': {
-        group: 'lane-insert',
-        className: 'bpmn-icon-lane-divide-two',
-        title: 'Divide into Two Lanes',
-        action: {
-          click: function(_event: any, element: any) {
-            modeling.splitLane(element, 2);
+            modeling.addLane(element, 'bottom');
           }
         }
       }
@@ -205,7 +195,7 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element: any)
         title: 'Add Lane Above',
         action: {
           click: function(_event: any, element: any) {
-            modeling.addLane(element, 'above');
+            modeling.addLane(element, 'top');
           }
         }
       },
@@ -215,17 +205,7 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element: any)
         title: 'Add Lane Below',
         action: {
           click: function(_event: any, element: any) {
-            modeling.addLane(element, 'below');
-          }
-        }
-      },
-      'lane-divide-two': {
-        group: 'lane-insert',
-        className: 'bpmn-icon-lane-divide-two',
-        title: 'Divide into Two Lanes',
-        action: {
-          click: function(_event: any, element: any) {
-            modeling.splitLane(element, 2);
+            modeling.addLane(element, 'bottom');
           }
         }
       }
