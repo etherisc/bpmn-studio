@@ -1,62 +1,89 @@
 ---
 layout: default
-title: API Reference
-nav_order: 4
-has_children: true
-permalink: /api/
+title: Home
+nav_order: 1
+description: "Process Editor - Standalone visual BPMN editor for insurance process flows"
+permalink: /
 ---
 
-# API Reference
-{: .no_toc }
+# Process Editor
+{: .fs-9 }
 
-Technical documentation for developers integrating with the Process Editor.
+A standalone visual BPMN editor for defining insurance process flows that produces BPMN XML and MachineSpec v2 JSON definitions.
 {: .fs-6 .fw-300 }
 
-## Overview
+[Try the Live Demo]({{ site.baseurl }}/app/){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[View on GitHub](https://github.com/etherisc/bpmn-studio){: .btn .fs-5 .mb-4 .mb-md-0 }
 
-The Process Editor provides several APIs for integration:
+---
 
-- **TypeScript Interfaces**: Type definitions for MachineSpec v2
-- **JSON Schema**: Validation schema for MachineSpec
-- **Mapping Functions**: Convert between BPMN and MachineSpec
-- **Validation Rules**: Custom bpmnlint rules
+## Features
 
-## Integration Points
+- **Visual BPMN Editor**: Browser-based modeler with restricted BPMN subset
+- **Insurance Process Support**: Custom metadata for states, events, timers, guards, and actions
+- **Real-time Validation**: Live linting with custom rules for process integrity
+- **Dual Export**: Generate both BPMN XML and MachineSpec v2 JSON
+- **Bundle Export**: ZIP packages with BPMN, JSON, and manifest with SHA256 hashes
+- **Auto-save**: Work is preserved across browser reloads
+- **Self-contained**: No backend required, runs entirely in the browser
 
-### Web Application Integration
+## Quick Start
 
-Import MachineSpec JSON into your web application:
+### Try the Live Demo
 
-```typescript
-import { MachineSpec } from './types/machine-spec';
+The easiest way to get started is to try our [live demo]({{ site.baseurl }}/app/) hosted on GitHub Pages.
 
-// Load MachineSpec from Process Editor
-const spec: MachineSpec = await loadProcessDefinition();
+### Local Development
 
-// Use in your state machine library
-const machine = createMachine(spec);
+```bash
+# Clone the repository
+git clone https://github.com/etherisc/bpmn-studio.git
+cd bpmn-studio
+
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm run dev
+
+# Open http://localhost:3000
 ```
 
-### Custom Validation
+## Supported BPMN Elements
 
-Extend validation with your own rules:
+| Element | Use | Notes |
+|---------|-----|-------|
+| **Start Event** | Process entry point | Visual only, exactly one per diagram |
+| **Task** | Represents a state | Must have `data-state-name` |
+| **End Event** | Terminal state | No outgoing flows allowed |
+| **Sequence Flow** | Transition | Must have `data-event` |
+| **Boundary Timer** | Timer on a state | Must have `data-event` and ISO duration/date |
+| **Lane** | Responsibility lane | Optional, maps to metadata |
 
-```typescript
-import { ValidationRule } from './types/validation';
+All other BPMN elements are blocked and will trigger validation errors.
 
-const customRule: ValidationRule = {
-  check: (node, reporter) => {
-    // Your validation logic
-  }
-};
-```
+## Architecture Overview
 
-### File Format Support
+The Process Editor is built with:
 
-The editor supports these file formats:
+- **Frontend**: TypeScript + Vite
+- **BPMN Engine**: bpmn-js with custom modules
+- **Validation**: Custom bpmnlint rules
+- **Export**: BPMN XML and MachineSpec v2 JSON
+- **Storage**: localStorage for auto-save
 
-| Format | Extension | Use Case |
-|--------|-----------|----------|
-| BPMN XML | `.bpmn` | Visual diagrams, tool interop |
-| MachineSpec JSON | `.machine.json` | Application integration |
-| Bundle ZIP | `.zip` | Complete export with manifest |
+## Documentation
+
+### 📚 **User Guides**
+- **[Getting Started]({{ site.baseurl }}/guides/getting-started/)** - Create your first process
+- **[Process Modeling]({{ site.baseurl }}/guides/process-modeling/)** - Advanced techniques
+
+### 📖 **Reference Documentation**
+- **[BPMN Elements Reference]({{ site.baseurl }}/guides/bpmn-elements/)** - Complete element guide
+- **[MachineSpec Reference]({{ site.baseurl }}/guides/machinespec-reference/)** - JSON format specification
+- **[Validation Reference]({{ site.baseurl }}/guides/validation-reference/)** - Rules and error handling
+
+### 🔧 **API Documentation**
+- **[TypeScript Interfaces]({{ site.baseurl }}/api/typescript-interfaces/)** - Type definitions
+- **[JSON Schema]({{ site.baseurl }}/api/json-schema/)** - MachineSpec schema
+
