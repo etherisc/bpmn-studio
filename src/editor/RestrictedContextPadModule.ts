@@ -53,21 +53,30 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element: any)
 
   // Actions for Start Events
   if (element.type === 'bpmn:StartEvent') {
-    Object.assign(actions, {
-      'append.task': appendAction(
-        'bpmn:Task', 'bpmn-icon-task', 'Append Task', {}
-      ),
-      'connect': {
-        group: 'connect',
-        className: 'bpmn-icon-connection-multi',
-        title: 'Connect to Task',
-        action: {
-          click: function(event: any, element: any) {
-            connect.start(event, element);
+    const outgoing = element.businessObject?.outgoing || [];
+    console.log('DEBUG: Start Event outgoing connections:', outgoing.length);
+    
+    // Only show append/connect options if no outgoing connection exists
+    if (outgoing.length === 0) {
+      console.log('DEBUG: Showing Start Event actions (no connections)');
+      Object.assign(actions, {
+        'append.task': appendAction(
+          'bpmn:Task', 'bpmn-icon-task', 'Append Task', {}
+        ),
+        'connect': {
+          group: 'connect',
+          className: 'bpmn-icon-connection-multi',
+          title: 'Connect to Task',
+          action: {
+            click: function(event: any, element: any) {
+              connect.start(event, element);
+            }
           }
         }
-      }
-    });
+      });
+    } else {
+      console.log('DEBUG: Start Event already has', outgoing.length, 'connections - hiding actions');
+    }
   }
 
   // Actions for Tasks
@@ -97,16 +106,18 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element: any)
           click: function(_event: any, element: any) {
             const boundaryEvent = elementFactory.createShape({
               type: 'bpmn:BoundaryEvent',
-              eventDefinitionType: 'bpmn:TimerEventDefinition'
+              eventDefinitionType: 'bpmn:TimerEventDefinition',
+              host: element
             });
             
-            // Position the boundary event on the task
+            // Position the boundary event on the task edge
             const position = {
-              x: element.x + element.width - 12,
-              y: element.y + element.height - 12
+              x: element.x + element.width - 18,
+              y: element.y + element.height - 18
             };
             
-            modeling.createShape(boundaryEvent, position, element);
+            // Create boundary event attached to the task
+            modeling.createShape(boundaryEvent, position, element, { attach: true });
           }
         }
       }

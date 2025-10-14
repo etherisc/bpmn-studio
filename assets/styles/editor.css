@@ -21,13 +21,32 @@ body {
 
 /* Toolbar */
 #toolbar {
-  background: #fff;
-  border-bottom: 1px solid #e1e5e9;
+  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  border-bottom: 1px solid #81d4fa;
   padding: 8px 16px;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Etherisc logo watermark */
+#etherisc-logo {
+  position: fixed;
+  bottom: 50px;
+  left: 50px;
+  z-index: 100;
+  pointer-events: none;
+  width: 200px;
+  height: 100px;
+  overflow: hidden;
+}
+
+#etherisc-logo img {
+  width: 200px;
+  height: 45px;
+  display: block;
 }
 
 .toolbar-button {
@@ -38,6 +57,10 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .toolbar-button:hover {
@@ -48,6 +71,34 @@ body {
 .toolbar-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.toolbar-button.active {
+  background: #3b82f6;
+  border-color: #2563eb;
+  color: white;
+}
+
+.toolbar-button.active:hover {
+  background: #2563eb;
+  border-color: #1d4ed8;
+}
+
+.button-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.button-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+.button-text {
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .toolbar-link {
@@ -92,10 +143,46 @@ body {
 /* Properties panel */
 #properties-panel {
   width: 300px;
+  min-width: 200px;
+  max-width: 600px;
   background: #fff;
   border-left: 1px solid #e1e5e9;
   overflow-y: auto;
   flex-shrink: 0;
+  position: relative;
+}
+
+/* Resize handle for properties panel */
+.properties-resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: transparent;
+  cursor: col-resize;
+  z-index: 10;
+}
+
+.properties-resize-handle:hover {
+  background: #3b82f6;
+}
+
+.properties-resize-handle.dragging {
+  background: #3b82f6;
+}
+
+/* Visual indicator for resize handle */
+.properties-resize-handle::before {
+  content: '';
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 30px;
+  background: #d1d5db;
+  border-radius: 1px;
 }
 
 .properties-panel-content {

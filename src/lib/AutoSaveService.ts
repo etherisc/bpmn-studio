@@ -30,7 +30,6 @@ export class AutoSaveService {
       }
     });
 
-    console.log('AutoSave service initialized');
   }
 
   private scheduleSave(): void {
@@ -60,7 +59,6 @@ export class AutoSaveService {
         localStorage.setItem(AutoSaveService.STORAGE_KEY, xml);
         localStorage.setItem(AutoSaveService.METADATA_KEY, JSON.stringify(metadata));
         
-        console.log('Diagram auto-saved to localStorage');
         this.showSaveIndicator();
       }
     } catch (error) {
@@ -75,10 +73,8 @@ export class AutoSaveService {
 
       if (savedXml && metadataStr) {
         const metadata = JSON.parse(metadataStr);
-        console.log('Found auto-saved diagram from:', metadata.savedAt);
 
         await this.modeler.importXML(savedXml);
-        console.log('Auto-saved diagram restored');
         this.showRestoreIndicator(metadata.savedAt);
         return true;
       }
@@ -92,7 +88,6 @@ export class AutoSaveService {
   clearAutoSave(): void {
     localStorage.removeItem(AutoSaveService.STORAGE_KEY);
     localStorage.removeItem(AutoSaveService.METADATA_KEY);
-    console.log('Auto-save cleared');
   }
 
   hasAutoSave(): boolean {
@@ -170,11 +165,15 @@ export class AutoSaveService {
 
   // Manual save method for toolbar
   async saveNow(): Promise<void> {
+    console.log('Save Now clicked');
     if (this.saveTimeout) {
       clearTimeout(this.saveTimeout);
       this.saveTimeout = null;
     }
     await this.saveToLocalStorage();
+    // Show specific feedback for manual save
+    this.showTemporaryMessage('Saved manually', 'success');
+    console.log('Save Now completed');
   }
 
   // Force save without delay (for critical operations)

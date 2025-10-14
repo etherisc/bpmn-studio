@@ -53,6 +53,7 @@ pnpm run dev
 
 | Element | Use | Notes |
 |---------|-----|-------|
+| **Start Event** | Process entry point | Visual only, exactly one per diagram |
 | **Task** | Represents a state | Must have `data-state-name` |
 | **End Event** | Terminal state | No outgoing flows allowed |
 | **Sequence Flow** | Transition | Must have `data-event` |
@@ -71,9 +72,3 @@ The Process Editor is built with:
 - **Export**: BPMN XML and MachineSpec v2 JSON
 - **Storage**: localStorage for auto-save
 
-## Getting Help
-
-- 📖 [User Guide]({{ site.baseurl }}/guides/) - Step-by-step tutorials
-- 🔧 [API Reference]({{ site.baseurl }}/api/) - Technical documentation
-- 🐛 [Issues](https://github.com/etherisc/bpmn-studio/issues) - Report bugs or request features
-- 💬 [Discussions](https://github.com/etherisc/bpmn-studio/discussions) - Community support

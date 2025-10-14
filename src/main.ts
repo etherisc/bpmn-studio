@@ -6,16 +6,19 @@ import '@bpmn-io/properties-panel/dist/assets/properties-panel.css';
 import { ModelerHost } from './editor/ModelerHost';
 import { Toolbar } from './ui/Toolbar';
 import { ValidationPane } from './ui/ValidationPane';
+import { ResizablePanel } from './ui/ResizablePanel';
 
 class ProcessEditor {
   private modelerHost: ModelerHost;
   private toolbar: Toolbar;
   private validationPane: ValidationPane;
+  private resizablePanel: ResizablePanel; // Makes properties panel resizable
 
   constructor() {
     this.modelerHost = new ModelerHost('#canvas');
     this.toolbar = new Toolbar('#toolbar', this.modelerHost);
     this.validationPane = new ValidationPane('#validation-panel', this.modelerHost);
+    this.resizablePanel = new ResizablePanel('#properties-panel');
 
     this.init();
   }
@@ -26,6 +29,10 @@ class ProcessEditor {
       this.toolbar.init();
       this.validationPane.init();
       
+      // Notify toolbar that canvas is ready
+      this.toolbar.onCanvasReady();
+      
+      
       // Connect validation callback
       this.modelerHost.setValidationCallback((issues) => {
         this.validationPane.updateIssues(issues);
@@ -34,7 +41,9 @@ class ProcessEditor {
       // Load blank template by default
       await this.modelerHost.loadBlankTemplate();
       
-      console.log('Process Editor initialized successfully');
+      // Resizable panel is initialized in constructor
+      void this.resizablePanel;
+      
     } catch (error) {
       console.error('Failed to initialize Process Editor:', error);
     }

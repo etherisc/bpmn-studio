@@ -8,6 +8,8 @@ import RestrictedPaletteModule from './RestrictedPaletteModule';
 import RestrictedContextPadModule from './RestrictedContextPadModule';
 import RulesProviderModule from './RulesProvider';
 import GridModule from 'diagram-js-grid';
+// import ErrorFeedbackModule from './ErrorFeedback'; // Removed
+// import ConnectionFactoryModule from './ConnectionFactory'; // Not needed
 // import PropertiesBindingsModule from './PropertiesBindings'; // Temporarily disabled
 import { LintingIntegration } from './LintingIntegration';
 import { ValidationIssue } from '../ui/ValidationPane';
@@ -54,6 +56,8 @@ export class ModelerHost {
     // Set up event listeners
     this.setupEventListeners();
     
+    // Rules provider is loaded and working
+    
     // Initialize linting
     this.lintingIntegration = new LintingIntegration(this.modeler);
     if (this.validationCallback) {
@@ -86,9 +90,8 @@ export class ModelerHost {
     this.validateDiagram();
   }
 
-  private onSelectionChanged(event: any): void {
+  private onSelectionChanged(_event: any): void {
     // Handle element selection for properties panel
-    console.log('Selection changed:', event.newSelection);
   }
 
   private validateDiagram(): void {
@@ -224,7 +227,6 @@ export class ModelerHost {
             height: containerRect.height
           });
           
-          console.log('Diagram centered');
         }
       } else {
         // No elements, just center the viewport
@@ -244,9 +246,10 @@ export class ModelerHost {
     try {
       // Use the official grid service from diagram-js-grid
       const grid = this.modeler.get('grid') as any;
+      console.log('Grid service:', grid, 'methods:', Object.keys(grid || {}));
       if (grid && grid.setVisible) {
         grid.setVisible(true);
-        console.log('Official grid background enabled');
+        console.log('Grid enabled');
       }
     } catch (error) {
       console.error('Failed to enable official grid background:', error);
@@ -279,14 +282,47 @@ export class ModelerHost {
     try {
       // Use the official grid service from diagram-js-grid
       const grid = this.modeler.get('grid') as any;
-      if (grid && grid.isVisible && grid.setVisible) {
-        const isVisible = grid.isVisible();
-        grid.setVisible(!isVisible);
-        console.log('Grid toggled:', !isVisible ? 'visible' : 'hidden');
+      console.log('Toggle grid - service:', grid, 'methods:', Object.keys(grid || {}));
+      
+      if (grid) {
+        if (grid.isVisible && grid.setVisible) {
+          const isVisible = grid.isVisible();
+          grid.setVisible(!isVisible);
+          console.log('Grid toggled to:', !isVisible);
+        } else if (grid.toggle) {
+          // Alternative API
+          grid.toggle();
+          console.log('Grid toggled via toggle() method');
+        } else {
+          // Fallback: try to toggle visibility
+          grid.visible = !grid.visible;
+          console.log('Grid toggled via visible property');
+        }
+      } else {
+        console.log('No grid service available');
       }
     } catch (error) {
       console.error('Failed to toggle grid:', error);
     }
+  }
+
+  isGridVisible(): boolean {
+    if (!this.modeler) return false;
+    
+    try {
+      const grid = this.modeler.get('grid') as any;
+      if (grid) {
+        if (grid.isVisible) {
+          return grid.isVisible();
+        } else if (grid.visible !== undefined) {
+          return grid.visible;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to check grid visibility:', error);
+    }
+    
+    return false; // Default to not visible
   }
 
   destroy(): void {

@@ -15,11 +15,18 @@ The Process Editor is designed specifically for modeling insurance processes usi
 
 ## What You'll Learn
 
-- **Getting Started**: Create your first process flow
-- **Process Modeling**: Advanced techniques and best practices  
-- **MachineSpec Format**: Understanding the JSON output format
-- **Validation Rules**: Complete reference for all validation rules
-- **Import/Export**: Working with BPMN and MachineSpec files
+### Tutorials
+- **[Getting Started](getting-started/)**: Create your first process flow
+- **[Process Modeling](process-modeling/)**: Advanced techniques and best practices  
+
+### Reference Documentation
+- **[BPMN Elements Reference](bpmn-elements/)**: Complete guide to supported elements
+- **[MachineSpec Reference](machinespec-reference/)**: JSON format specification
+- **[Validation Reference](validation-reference/)**: Rules and error handling
+
+### Legacy Reference
+- **[MachineSpec Format](machinespec-format/)**: Understanding the JSON output format
+- **[Validation Rules](validation-rules/)**: Complete reference for all validation rules
 
 ## Before You Begin
 
@@ -31,7 +38,9 @@ The Process Editor uses a **restricted BPMN subset** designed specifically for i
 - ✅ **Boundary Timers** represent time-based transitions
 - ✅ **Lanes** represent responsibility groupings
 
-❌ **Start Events, Gateways, Subprocesses** and other BPMN elements are not supported to ensure clean, deterministic process definitions.
+- ✅ **Start Events** represent visual entry points (visual only)
+
+❌ **Gateways, Subprocesses** and other BPMN elements are not supported to ensure clean, deterministic process definitions.
 
 ## Key Concepts
 
