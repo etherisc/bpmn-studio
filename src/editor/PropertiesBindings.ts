@@ -30,7 +30,6 @@ export class ProcessPropertiesProvider {
     container.innerHTML = `
       <div class="properties-panel-content">
         <div id="properties-content">
-          <p>Select an element to edit its properties</p>
         </div>
       </div>
     `;
@@ -40,12 +39,13 @@ export class ProcessPropertiesProvider {
     const container = document.querySelector('#properties-content');
     if (!container || selection.length === 0) {
       if (container) {
-        container.innerHTML = '<p>Select an element to edit its properties</p>';
+        container.innerHTML = '';
       }
       return;
     }
 
     const element = selection[0];
+    console.log('🔍 DEBUG: Selected element type:', element.type, 'id:', element.id);
     this.renderElementProperties(element, container);
   }
 
@@ -227,10 +227,16 @@ export class ProcessPropertiesProvider {
   }
 
   private setProperty(element: any, propertyName: string, value: string): void {
+    console.log('🔍 DEBUG: Setting property', propertyName, '=', value, 'on element', element.id);
+    
     // Update the element's business object properties
     this.modeling.updateProperties(element, {
       [propertyName]: value || undefined
     });
+    
+    // Verify it was saved
+    const saved = element.businessObject.get(propertyName);
+    console.log('🔍 DEBUG: Property saved as:', saved);
   }
 
   // Validation methods removed - handled by bpmnlint rules instead

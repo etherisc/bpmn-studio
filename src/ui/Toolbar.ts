@@ -219,7 +219,10 @@ export class Toolbar {
 
   private async handleExportSpec(): Promise<void> {
     const bpmnXml = await this.modelerHost.exportBPMN();
+    
     const spec = await this.bpmnToSpecMapper.convertBpmnToSpec(bpmnXml);
+    console.log('🔍 DEBUG: Converted MachineSpec:', spec);
+    
     const jsonContent = JSON.stringify(spec, null, 2);
     downloadFile(jsonContent, `${spec.id}.machine.json`, 'application/json');
   }

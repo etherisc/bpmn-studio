@@ -1,5 +1,5 @@
 import Modeler from 'bpmn-js/lib/Modeler';
-import { 
+import {
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,
 } from 'bpmn-js-properties-panel';
@@ -10,7 +10,7 @@ import RulesProviderModule from './RulesProvider';
 import GridModule from 'diagram-js-grid';
 // import ErrorFeedbackModule from './ErrorFeedback'; // Removed
 // import ConnectionFactoryModule from './ConnectionFactory'; // Not needed
-// import PropertiesBindingsModule from './PropertiesBindings'; // Temporarily disabled
+import ProcessPropertiesProviderModule from './ProcessPropertiesProvider';
 import { LintingIntegration } from './LintingIntegration';
 import { ValidationIssue } from '../ui/ValidationPane';
 import { AutoSaveService } from '../lib/AutoSaveService';
@@ -37,13 +37,13 @@ export class ModelerHost {
         bindTo: document
       },
       additionalModules: [
-        BpmnPropertiesPanelModule,
-        BpmnPropertiesProviderModule,
+        BpmnPropertiesPanelModule, // Official properties panel
+        BpmnPropertiesProviderModule, // Official properties provider
         GridModule, // Official grid background
         RestrictedPaletteModule, // Custom palette with only allowed elements
         RestrictedContextPadModule, // Custom context pad with only allowed actions
         RulesProviderModule, // Keep rules to block forbidden elements
-        // PropertiesBindingsModule, // Temporarily disabled
+        ProcessPropertiesProviderModule, // Integrated custom properties
       ],
       propertiesPanel: {
         parent: '#properties-panel'

@@ -60,6 +60,9 @@ CustomPaletteProvider.prototype.getPaletteEntries = function() {
     'create.end-event': createAction(
       'bpmn:EndEvent', 'event', 'bpmn-icon-end-event-none', 'Create End Event'
     ),
+    'create.participant': createAction(
+      'bpmn:Participant', 'collaboration', 'bpmn-icon-participant', 'Create Pool/Lane'
+    ),
     'palette-separator': {
       group: 'activity',
       separator: true

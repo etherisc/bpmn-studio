@@ -32,6 +32,14 @@ export class BpmnToSpecMapper {
     const boundaryEvents = this.extractBoundaryEvents(processElement);
     const lanes = this.extractLanes(doc);
 
+    console.log('🔍 DEBUG: Extracted elements:', {
+      tasks: tasks.length,
+      endEvents: endEvents.length,
+      sequenceFlows: sequenceFlows.length,
+      boundaryEvents: boundaryEvents.length,
+      lanes: lanes.length
+    });
+
     // Find initial state (task with no incoming flows)
     const initial = this.findInitialState(tasks, sequenceFlows);
     if (!initial) {
@@ -42,7 +50,7 @@ export class BpmnToSpecMapper {
     const states = this.buildStates(tasks, endEvents, sequenceFlows, boundaryEvents);
 
     // Build metadata
-    const metadata = this.buildMetadata(lanes);
+    const metadata = this.buildMetadata(lanes, tasks);
 
     return {
       id: actualProcessId,
@@ -316,13 +324,28 @@ export class BpmnToSpecMapper {
     return timer;
   }
 
-  private buildMetadata(lanes: Array<{ name: string, flowNodeRefs: string[] }>): any {
+  private buildMetadata(
+    lanes: Array<{ name: string, flowNodeRefs: string[] }>,
+    tasks: Array<{ id: string, element: Element }>
+  ): any {
     const metadata: any = {};
 
     if (lanes.length > 0) {
       metadata.lanes = {};
       lanes.forEach(lane => {
-        metadata.lanes[lane.name] = lane.flowNodeRefs;
+        // Map flowNodeRefs (element IDs) to state names
+        const stateNames: string[] = [];
+        lane.flowNodeRefs.forEach(nodeRef => {
+          const task = tasks.find(t => t.id === nodeRef);
+          if (task) {
+            const stateName = this.getDataAttribute(task.element, 'data-state-name') || task.id;
+            stateNames.push(stateName);
+          }
+        });
+        
+        if (stateNames.length > 0) {
+          metadata.lanes[lane.name] = stateNames;
+        }
       });
     }
 

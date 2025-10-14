@@ -21,16 +21,17 @@ export class ProcessEditorRulesProvider {
     const context = event.context;
     const shape = context.shape;
 
-    // Only allow our supported element types
-    const allowedTypes = [
-      'bpmn:StartEvent', // Visual only - for usability
-      'bpmn:Task',
-      'bpmn:EndEvent',
-      'bpmn:BoundaryEvent',
-      'bpmn:Lane',
-      'bpmn:Participant',
-      'bpmn:Process'
-    ];
+  // Only allow our supported element types
+  const allowedTypes = [
+    'bpmn:StartEvent', // Visual only - for usability
+    'bpmn:Task',
+    'bpmn:EndEvent',
+    'bpmn:BoundaryEvent',
+    'bpmn:Lane',
+    'bpmn:Participant',
+    'bpmn:Process',
+    'bpmn:Collaboration' // Needed for lanes/participants
+  ];
 
     if (!allowedTypes.includes(shape.type)) {
       console.warn(`Element type ${shape.type} is not allowed in this editor. Allowed types: ${allowedTypes.join(', ')}`);
