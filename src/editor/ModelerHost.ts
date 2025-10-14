@@ -11,6 +11,8 @@ import GridModule from 'diagram-js-grid';
 // import ErrorFeedbackModule from './ErrorFeedback'; // Removed
 // import ConnectionFactoryModule from './ConnectionFactory'; // Not needed
 import ProcessPropertiesProviderModule from './ProcessPropertiesProvider';
+import NamingServiceModule from './NamingService';
+import NamingEventHandlerModule from './NamingEventHandler';
 import { LintingIntegration } from './LintingIntegration';
 import { ValidationIssue } from '../ui/ValidationPane';
 import { AutoSaveService } from '../lib/AutoSaveService';
@@ -44,6 +46,8 @@ export class ModelerHost {
         RestrictedContextPadModule, // Custom context pad with only allowed actions
         RulesProviderModule, // Keep rules to block forbidden elements
         ProcessPropertiesProviderModule, // Integrated custom properties
+        NamingServiceModule, // Auto-naming and synchronization
+        NamingEventHandlerModule, // Event handling for naming
       ],
       propertiesPanel: {
         parent: '#properties-panel'
@@ -246,10 +250,8 @@ export class ModelerHost {
     try {
       // Use the official grid service from diagram-js-grid
       const grid = this.modeler.get('grid') as any;
-      console.log('Grid service:', grid, 'methods:', Object.keys(grid || {}));
       if (grid && grid.setVisible) {
         grid.setVisible(true);
-        console.log('Grid enabled');
       }
     } catch (error) {
       console.error('Failed to enable official grid background:', error);
@@ -282,24 +284,19 @@ export class ModelerHost {
     try {
       // Use the official grid service from diagram-js-grid
       const grid = this.modeler.get('grid') as any;
-      console.log('Toggle grid - service:', grid, 'methods:', Object.keys(grid || {}));
       
       if (grid) {
         if (grid.isVisible && grid.setVisible) {
           const isVisible = grid.isVisible();
           grid.setVisible(!isVisible);
-          console.log('Grid toggled to:', !isVisible);
         } else if (grid.toggle) {
           // Alternative API
           grid.toggle();
-          console.log('Grid toggled via toggle() method');
         } else {
           // Fallback: try to toggle visibility
           grid.visible = !grid.visible;
-          console.log('Grid toggled via visible property');
         }
       } else {
-        console.log('No grid service available');
       }
     } catch (error) {
       console.error('Failed to toggle grid:', error);

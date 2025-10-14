@@ -32,13 +32,6 @@ export class BpmnToSpecMapper {
     const boundaryEvents = this.extractBoundaryEvents(processElement);
     const lanes = this.extractLanes(doc);
 
-    console.log('🔍 DEBUG: Extracted elements:', {
-      tasks: tasks.length,
-      endEvents: endEvents.length,
-      sequenceFlows: sequenceFlows.length,
-      boundaryEvents: boundaryEvents.length,
-      lanes: lanes.length
-    });
 
     // Find initial state (task with no incoming flows)
     const initial = this.findInitialState(tasks, sequenceFlows);
@@ -214,15 +207,11 @@ export class BpmnToSpecMapper {
     // Process tasks
     tasks.forEach(task => {
       const stateName = this.getDataAttribute(task.element, 'data-state-name') || task.id;
-      const elementId = this.getDataAttribute(task.element, 'data-element-id');
       
       const state: StateNode = {
+        id: `task_${stateName}`, // Auto-generate ID based on state name
         type: 'task'
       };
-
-      if (elementId) {
-        state.id = elementId;
-      }
 
       // Add transitions
       const outgoingFlows = sequenceFlows.filter(flow => flow.source === task.id);
@@ -234,13 +223,14 @@ export class BpmnToSpecMapper {
           if (eventName) {
             const targetStateName = this.getTargetStateName(flow.target, tasks, endEvents);
             if (targetStateName) {
-              const transition: TransitionSpec = { target: targetStateName };
+              const transition: TransitionSpec = { 
+                id: `flow_${stateName}_${eventName.toLowerCase()}`, // Auto-generate flow ID
+                target: targetStateName 
+              };
               
-              const flowId = this.getDataAttribute(flow.element, 'data-flow-id');
               const guard = this.getDataAttribute(flow.element, 'data-guard');
               const actions = this.getDataAttribute(flow.element, 'data-actions');
               
-              if (flowId) transition.id = flowId;
               if (guard) transition.guard = guard;
               if (actions) transition.actions = actions.split(',').map(a => a.trim()).filter(a => a);
 
@@ -253,7 +243,7 @@ export class BpmnToSpecMapper {
       // Add timers from boundary events
       const attachedTimers = boundaryEvents.filter(be => be.attachedTo === task.id);
       if (attachedTimers.length > 0) {
-        state.timers = attachedTimers.map(timer => this.buildTimerSpec(timer.element)).filter(t => t) as TimerSpec[];
+        state.timers = attachedTimers.map(timer => this.buildTimerSpec(timer.element, stateName)).filter(t => t) as TimerSpec[];
       }
 
       states[stateName] = state;
@@ -262,15 +252,11 @@ export class BpmnToSpecMapper {
     // Process end events
     endEvents.forEach(endEvent => {
       const stateName = this.getDataAttribute(endEvent.element, 'data-state-name') || endEvent.id;
-      const elementId = this.getDataAttribute(endEvent.element, 'data-element-id');
       
       const state: StateNode = {
+        id: `end_${stateName}`, // Auto-generate ID based on state name
         type: 'end'
       };
-
-      if (elementId) {
-        state.id = elementId;
-      }
 
       states[stateName] = state;
     });
@@ -298,17 +284,16 @@ export class BpmnToSpecMapper {
     return null;
   }
 
-  private buildTimerSpec(boundaryElement: Element): TimerSpec | null {
-    const timerId = this.getDataAttribute(boundaryElement, 'data-timer-id');
+  private buildTimerSpec(boundaryElement: Element, stateName: string): TimerSpec | null {
     const timerType = this.getDataAttribute(boundaryElement, 'data-timer-type') as 'DURATION' | 'DATE';
     const event = this.getDataAttribute(boundaryElement, 'data-event');
 
-    if (!timerId || !timerType || !event) {
+    if (!timerType || !event) {
       return null;
     }
 
     const timer: TimerSpec = {
-      id: timerId,
+      id: `timer_${stateName}_${event.toLowerCase()}`, // Auto-generate timer ID
       type: timerType,
       event
     };

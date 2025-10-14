@@ -16,8 +16,9 @@ function createTextFieldEntry(options: {
   element: any;
   injector: any;
   validate?: (value: string) => string | undefined;
+  onUpdate?: (value: string, element: any, injector: any) => void;
 }) {
-  const { id, label, property, element, injector, validate } = options;
+  const { id, label, property, element, injector, validate, onUpdate } = options;
   const commandStack = injector.get('commandStack');
   const debounce = injector.get('debounceInput');
   const businessObject = element.businessObject;
@@ -36,6 +37,11 @@ function createTextFieldEntry(options: {
           [property]: value || undefined
         }
       });
+
+      // Call custom update handler if provided
+      if (onUpdate) {
+        onUpdate(value, element, injector);
+      }
     },
     validate,
     debounce
@@ -94,14 +100,14 @@ ProcessPropertiesProvider.prototype.getGroups = function(element: any) {
                 return 'Must be snake_case';
               }
               return undefined;
+            },
+            onUpdate: (value: string, element: any, injector: any) => {
+              // Sync BPMN name when state name changes
+              const namingService = injector.get('namingService');
+              if (namingService && value) {
+                namingService.syncNameFromStateName(element, value);
+              }
             }
-          }),
-          createTextFieldEntry({
-            id: 'taskElementId',
-            label: 'Element ID',
-            property: 'data-element-id',
-            element,
-            injector: this._injector
           })
         ]
       });
@@ -125,14 +131,14 @@ ProcessPropertiesProvider.prototype.getGroups = function(element: any) {
                 return 'Must be UPPER_SNAKE_CASE';
               }
               return undefined;
+            },
+            onUpdate: (value: string, element: any, injector: any) => {
+              // Sync flow name when event name changes (bidirectional for flows)
+              const namingService = injector.get('namingService');
+              if (namingService && value) {
+                namingService.updateFlowName(element, namingService.eventNameToFlowName(value));
+              }
             }
-          }),
-          createTextFieldEntry({
-            id: 'flowElementId',
-            label: 'Flow ID',
-            property: 'data-flow-id',
-            element,
-            injector: this._injector
           }),
           createTextFieldEntry({
             id: 'guard',
@@ -159,11 +165,18 @@ ProcessPropertiesProvider.prototype.getGroups = function(element: any) {
         shouldOpen: true,
         entries: [
           createTextFieldEntry({
-            id: 'endElementId',
-            label: 'Element ID',
-            property: 'data-element-id',
+            id: 'endStateName',
+            label: 'State Name (snake_case)',
+            property: 'data-state-name',
             element,
-            injector: this._injector
+            injector: this._injector,
+            validate: (value: string) => {
+              if (!value) return 'State name is required';
+              if (!/^[a-z][a-z0-9_]*$/.test(value)) {
+                return 'Must be snake_case';
+              }
+              return undefined;
+            }
           })
         ]
       });
@@ -217,7 +230,7 @@ ProcessPropertiesProvider.prototype.getGroups = function(element: any) {
                   return 'Must be UPPER_SNAKE_CASE';
                 }
                 return undefined;
-              }
+              },
             })
           ]
         });

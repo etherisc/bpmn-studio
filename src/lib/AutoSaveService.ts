@@ -165,7 +165,6 @@ export class AutoSaveService {
 
   // Manual save method for toolbar
   async saveNow(): Promise<void> {
-    console.log('Save Now clicked');
     if (this.saveTimeout) {
       clearTimeout(this.saveTimeout);
       this.saveTimeout = null;
@@ -173,7 +172,6 @@ export class AutoSaveService {
     await this.saveToLocalStorage();
     // Show specific feedback for manual save
     this.showTemporaryMessage('Saved manually', 'success');
-    console.log('Save Now completed');
   }
 
   // Force save without delay (for critical operations)

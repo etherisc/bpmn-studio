@@ -39,7 +39,6 @@ export class Toolbar {
 
   // Called by ModelerHost after canvas is fully initialized
   onCanvasReady(): void {
-    console.log('Canvas ready - updating UI');
     this.updateGridButton();
   }
 
@@ -121,7 +120,6 @@ export class Toolbar {
     const button = target.closest('[data-action]') as HTMLElement;
     const action = button?.dataset.action;
     
-    console.log('Button clicked:', action);
     if (!action) return;
 
     try {
@@ -221,7 +219,6 @@ export class Toolbar {
     const bpmnXml = await this.modelerHost.exportBPMN();
     
     const spec = await this.bpmnToSpecMapper.convertBpmnToSpec(bpmnXml);
-    console.log('🔍 DEBUG: Converted MachineSpec:', spec);
     
     const jsonContent = JSON.stringify(spec, null, 2);
     downloadFile(jsonContent, `${spec.id}.machine.json`, 'application/json');

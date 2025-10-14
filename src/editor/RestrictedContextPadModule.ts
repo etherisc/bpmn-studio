@@ -170,6 +170,68 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element: any)
     });
   }
 
+  // Actions for Participants (Pools)
+  if (element.type === 'bpmn:Participant') {
+    Object.assign(actions, {
+      'lane-insert-below': {
+        group: 'lane-insert',
+        className: 'bpmn-icon-lane-insert-below',
+        title: 'Add Lane Below',
+        action: {
+          click: function(_event: any, element: any) {
+            modeling.addLane(element, 'below');
+          }
+        }
+      },
+      'lane-divide-two': {
+        group: 'lane-insert',
+        className: 'bpmn-icon-lane-divide-two',
+        title: 'Divide into Two Lanes',
+        action: {
+          click: function(_event: any, element: any) {
+            modeling.splitLane(element, 2);
+          }
+        }
+      }
+    });
+  }
+
+  // Actions for Lanes
+  if (element.type === 'bpmn:Lane') {
+    Object.assign(actions, {
+      'lane-insert-above': {
+        group: 'lane-insert',
+        className: 'bpmn-icon-lane-insert-above',
+        title: 'Add Lane Above',
+        action: {
+          click: function(_event: any, element: any) {
+            modeling.addLane(element, 'above');
+          }
+        }
+      },
+      'lane-insert-below': {
+        group: 'lane-insert',
+        className: 'bpmn-icon-lane-insert-below',
+        title: 'Add Lane Below',
+        action: {
+          click: function(_event: any, element: any) {
+            modeling.addLane(element, 'below');
+          }
+        }
+      },
+      'lane-divide-two': {
+        group: 'lane-insert',
+        className: 'bpmn-icon-lane-divide-two',
+        title: 'Divide into Two Lanes',
+        action: {
+          click: function(_event: any, element: any) {
+            modeling.splitLane(element, 2);
+          }
+        }
+      }
+    });
+  }
+
   // Common actions for all elements
   Object.assign(actions, {
     'delete': {
