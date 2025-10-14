@@ -2,6 +2,7 @@
 layout: default
 title: Live Demo
 nav_order: 5
+permalink: /app/
 ---
 
 # Process Editor - Live Demo

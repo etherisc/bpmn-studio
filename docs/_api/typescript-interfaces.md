@@ -3,6 +3,7 @@ layout: default
 title: TypeScript Interfaces
 parent: API Reference
 nav_order: 1
+permalink: /api/typescript-interfaces/
 ---
 
 # TypeScript Interfaces

@@ -1,8 +1,9 @@
 ---
 layout: default
-title: Validation Rules
+title: Validation Rules (Legacy)
 parent: User Guide
-nav_order: 4
+nav_order: 7
+permalink: /guides/validation-rules/
 ---
 
 # Validation Rules Reference
