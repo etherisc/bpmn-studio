@@ -3,7 +3,7 @@ layout: default
 title: JSON Schema
 parent: API Reference
 nav_order: 2
-permalink: /api/json-schema/
+permalink: /json-schema/
 ---
 
 # MachineSpec v2 JSON Schema

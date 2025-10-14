@@ -3,7 +3,7 @@ layout: default
 title: MachineSpec Format (Legacy)
 parent: User Guide
 nav_order: 6
-permalink: /guides/machinespec-format/
+permalink: /machinespec-format/
 ---
 
 # MachineSpec v2 Format

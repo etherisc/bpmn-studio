@@ -3,7 +3,7 @@ layout: default
 title: Process Modeling
 parent: User Guide
 nav_order: 2
-permalink: /guides/process-modeling/
+permalink: /process-modeling/
 ---
 
 # Process Modeling Guide

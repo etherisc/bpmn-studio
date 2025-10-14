@@ -3,7 +3,7 @@ layout: default
 title: Getting Started
 parent: User Guide
 nav_order: 1
-permalink: /guides/getting-started/
+permalink: /getting-started/
 ---
 
 # Getting Started

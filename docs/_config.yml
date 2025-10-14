@@ -56,15 +56,6 @@ kramdown:
     block:
       line_numbers: true
 
-# Collections
-collections:
-  guides:
-    permalink: "/:collection/:name/"
-    output: true
-  api:
-    permalink: "/:collection/:name/"
-    output: true
-
 # Defaults
 defaults:
   - scope:
@@ -72,18 +63,6 @@ defaults:
       type: "pages"
     values:
       layout: "default"
-  - scope:
-      path: ""
-      type: "guides"
-    values:
-      layout: "default"
-      nav_order: 3
-  - scope:
-      path: ""
-      type: "api"
-    values:
-      layout: "default"
-      nav_order: 4
 
 # Exclude files
 exclude:

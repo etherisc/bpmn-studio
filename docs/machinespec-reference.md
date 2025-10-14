@@ -3,7 +3,7 @@ layout: default
 title: MachineSpec Reference
 parent: User Guide
 nav_order: 4
-permalink: /guides/machinespec-reference/
+permalink: /machinespec-reference/
 ---
 
 # MachineSpec v2 Reference
