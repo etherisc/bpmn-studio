@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 
-export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/bpmn-studio/app/' : '/',
+export default defineConfig(({ mode }) => ({
+  base: mode === 'production' ? '/bpmn-studio/app/' : '/',
   server: {
     port: 3000,
   },
@@ -14,4 +14,4 @@ export default defineConfig({
     include: ['bpmn-js', 'bpmn-js-properties-panel', 'bpmnlint']
   },
   publicDir: 'assets'
-})
+}))
