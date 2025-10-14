@@ -3,6 +3,7 @@ layout: default
 title: BPMN Elements Reference
 parent: User Guide
 nav_order: 3
+permalink: /guides/bpmn-elements/
 ---
 
 # BPMN Elements Reference

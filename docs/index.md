@@ -72,3 +72,18 @@ The Process Editor is built with:
 - **Export**: BPMN XML and MachineSpec v2 JSON
 - **Storage**: localStorage for auto-save
 
+## Documentation
+
+### 📚 **User Guides**
+- **[Getting Started]({{ site.baseurl }}/guides/getting-started/)** - Create your first process
+- **[Process Modeling]({{ site.baseurl }}/guides/process-modeling/)** - Advanced techniques
+
+### 📖 **Reference Documentation**
+- **[BPMN Elements Reference]({{ site.baseurl }}/guides/bpmn-elements/)** - Complete element guide
+- **[MachineSpec Reference]({{ site.baseurl }}/guides/machinespec-reference/)** - JSON format specification
+- **[Validation Reference]({{ site.baseurl }}/guides/validation-reference/)** - Rules and error handling
+
+### 🔧 **API Documentation**
+- **[TypeScript Interfaces]({{ site.baseurl }}/api/typescript-interfaces/)** - Type definitions
+- **[JSON Schema]({{ site.baseurl }}/api/json-schema/)** - MachineSpec schema
+

@@ -3,6 +3,7 @@ layout: default
 title: Validation Reference
 parent: User Guide
 nav_order: 5
+permalink: /guides/validation-reference/
 ---
 
 # Validation Reference

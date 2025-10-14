@@ -5,10 +5,10 @@
 import { describe, it, expect } from 'vitest';
 import subsetOnly from '../src/editor/validation/rules/subset-only';
 import singleInitialTask from '../src/editor/validation/rules/single-initial-task';
-import deterministicTransitions from '../src/editor/validation/rules/deterministic-transitions';
+// import deterministicTransitions from '../src/editor/validation/rules/deterministic-transitions';
 import terminalNoOutgoing from '../src/editor/validation/rules/terminal-no-outgoing';
 import timerValid from '../src/editor/validation/rules/timer-valid';
-import uniqueIds from '../src/editor/validation/rules/unique-ids';
+// import uniqueIds from '../src/editor/validation/rules/unique-ids';
 import stateNameValid from '../src/editor/validation/rules/state-name-valid';
 
 // Mock reporter for testing
@@ -199,7 +199,7 @@ describe('state-name-valid rule', () => {
     const task = {
       $type: 'bpmn:Task',
       id: 'task1',
-      get: (attr: string) => null
+      get: (_attr: string) => null
     };
 
     rule.check(task, reporter);
@@ -285,7 +285,7 @@ describe('timer-valid rule', () => {
       $type: 'bpmn:BoundaryEvent',
       id: 'timer1',
       eventDefinitions: [{ $type: 'bpmn:TimerEventDefinition' }],
-      get: (attr: string) => null
+      get: (_attr: string) => null
     };
 
     rule.check(incompleteTimer, reporter);

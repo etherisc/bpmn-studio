@@ -36,7 +36,7 @@ mockElement.ownerDocument = mockDocument;
 
 // Mock DOMParser with proper BPMN parsing
 global.DOMParser = class DOMParser {
-  parseFromString(str: string, type: string) {
+  parseFromString(str: string, _type: string) {
     // Simple BPMN-aware parser for tests
     const isValidXML = !str.includes('<invalid>');
     
@@ -111,7 +111,7 @@ global.DOMParser = class DOMParser {
 };
 
 global.XMLSerializer = class XMLSerializer {
-  serializeToString(doc: any) {
+  serializeToString(_doc: any) {
     return `<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
   <bpmn:process id="test-process">
