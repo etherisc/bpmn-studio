@@ -2,7 +2,7 @@
  * BPMN XML to MachineSpec v2 JSON conversion
  */
 
-import { MachineSpec, StateNode, TransitionSpec, TimerSpec } from '../types/machine-spec';
+import { MachineSpec, StateNode, TransitionSpec, TimerSpec, CommentSpec } from '../types/machine-spec';
 
 export class BpmnToSpecMapper {
   
@@ -31,6 +31,8 @@ export class BpmnToSpecMapper {
     const sequenceFlows = this.extractSequenceFlows(processElement);
     const boundaryEvents = this.extractBoundaryEvents(processElement);
     const lanes = this.extractLanes(doc);
+    const textAnnotations = this.extractTextAnnotations(processElement);
+    const associations = this.extractAssociations(processElement);
 
 
     // Find initial state (task with no incoming flows)
@@ -43,7 +45,7 @@ export class BpmnToSpecMapper {
     const states = this.buildStates(tasks, endEvents, sequenceFlows, boundaryEvents);
 
     // Build metadata
-    const metadata = this.buildMetadata(lanes, tasks);
+    const metadata = this.buildMetadata(lanes, tasks, textAnnotations, associations);
 
     return {
       id: actualProcessId,
@@ -150,6 +152,39 @@ export class BpmnToSpecMapper {
     });
 
     return lanes;
+  }
+
+  private extractTextAnnotations(processElement: Element): Array<{ id: string, text: string, element: Element }> {
+    const textAnnotations: Array<{ id: string, text: string, element: Element }> = [];
+    const annotationElements = processElement.querySelectorAll('textAnnotation, bpmn\\:textAnnotation, bpmn2\\:textAnnotation');
+    
+    annotationElements.forEach(annotation => {
+      const id = annotation.getAttribute('id');
+      const text = annotation.textContent?.trim() || annotation.getAttribute('text') || '';
+      
+      if (id) {
+        textAnnotations.push({ id, text, element: annotation });
+      }
+    });
+
+    return textAnnotations;
+  }
+
+  private extractAssociations(processElement: Element): Array<{ id: string, source: string, target: string, element: Element }> {
+    const associations: Array<{ id: string, source: string, target: string, element: Element }> = [];
+    const associationElements = processElement.querySelectorAll('association, bpmn\\:association, bpmn2\\:association');
+    
+    associationElements.forEach(association => {
+      const id = association.getAttribute('id');
+      const source = association.getAttribute('sourceRef');
+      const target = association.getAttribute('targetRef');
+      
+      if (id && source && target) {
+        associations.push({ id, source, target, element: association });
+      }
+    });
+
+    return associations;
   }
 
   private findInitialState(
@@ -328,7 +363,9 @@ export class BpmnToSpecMapper {
 
   private buildMetadata(
     lanes: Array<{ name: string, flowNodeRefs: string[] }>,
-    tasks: Array<{ id: string, element: Element }>
+    tasks: Array<{ id: string, element: Element }>,
+    textAnnotations: Array<{ id: string, text: string, element: Element }>,
+    associations: Array<{ id: string, source: string, target: string, element: Element }>
   ): any {
     const metadata: any = {};
 
@@ -344,10 +381,34 @@ export class BpmnToSpecMapper {
             stateNames.push(stateName);
           }
         });
-        
+
         if (stateNames.length > 0) {
           metadata.lanes[lane.name] = stateNames;
         }
+      });
+    }
+
+    if (textAnnotations.length > 0) {
+      metadata.comments = textAnnotations.map(annotation => {
+        const comment: CommentSpec = {
+          id: annotation.id,
+          text: annotation.text
+        };
+
+        // Find if this annotation is connected to any element via association
+        const association = associations.find(assoc => assoc.source === annotation.id);
+        if (association) {
+          // Map the target element ID to state name if it's a task
+          const targetTask = tasks.find(t => t.id === association.target);
+          if (targetTask) {
+            const stateName = this.getDataAttribute(targetTask.element, 'data-state-name') || targetTask.id;
+            comment.attachedTo = stateName;
+          } else {
+            comment.attachedTo = association.target;
+          }
+        }
+
+        return comment;
       });
     }
 

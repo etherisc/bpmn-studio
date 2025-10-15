@@ -28,6 +28,13 @@ export interface StateNode {
   metadata?: Record<string, unknown>;
 }
 
+export interface CommentSpec {
+  id: string;                      // stable comment id
+  text: string;                    // comment content
+  attachedTo?: string;             // optional: element id this comment is attached to
+  position?: { x: number; y: number }; // comment position
+}
+
 export interface MachineSpec {
   id: string;                      // process key
   version: number;                 // definition version
@@ -35,6 +42,7 @@ export interface MachineSpec {
   metadata?: {
     documentation?: string;
     lanes?: Record<string, string[]>;  // lane -> [stateName,...]
+    comments?: CommentSpec[];       // text annotations/comments
   };
   states: Record<StateValue, StateNode>;
 }

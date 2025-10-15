@@ -63,6 +63,9 @@ CustomPaletteProvider.prototype.getPaletteEntries = function() {
     'create.participant': createAction(
       'bpmn:Participant', 'collaboration', 'bpmn-icon-participant', 'Create Pool/Lane'
     ),
+    'create.text-annotation': createAction(
+      'bpmn:TextAnnotation', 'artifact', 'bpmn-icon-text-annotation', 'Create Comment'
+    ),
     'palette-separator': {
       group: 'activity',
       separator: true

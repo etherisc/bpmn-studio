@@ -30,7 +30,9 @@ export class ProcessEditorRulesProvider {
     'bpmn:Lane',
     'bpmn:Participant',
     'bpmn:Process',
-    'bpmn:Collaboration' // Needed for lanes/participants
+    'bpmn:Collaboration', // Needed for lanes/participants
+    'bpmn:TextAnnotation', // Comments/documentation
+    'bpmn:Association' // Connects text annotations to other elements
   ];
 
     if (!allowedTypes.includes(shape.type)) {
@@ -63,9 +65,19 @@ export class ProcessEditorRulesProvider {
     const source = context.source;
     const target = context.target;
 
-    // Only allow sequence flows
-    if (connection.type !== 'bpmn:SequenceFlow') {
-      throw new Error('Only Sequence Flows are allowed as connections');
+    // Allow sequence flows and associations (for text annotations)
+    if (connection.type !== 'bpmn:SequenceFlow' && connection.type !== 'bpmn:Association') {
+      throw new Error('Only Sequence Flows and Associations are allowed as connections');
+    }
+
+    // Handle associations (for text annotations)
+    if (connection.type === 'bpmn:Association') {
+      // Associations can only connect text annotations to other elements
+      if (source.type !== 'bpmn:TextAnnotation' && target.type !== 'bpmn:TextAnnotation') {
+        throw new Error('Associations can only connect Text Annotations to other elements');
+      }
+      // Don't apply sequence flow rules to associations
+      return;
     }
 
     // End events cannot have outgoing flows

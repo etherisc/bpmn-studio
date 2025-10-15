@@ -212,6 +212,40 @@ CustomContextPadProvider.prototype.getContextPadEntries = function(element: any)
     });
   }
 
+  // Actions for Text Annotations (Comments)
+  if (element.type === 'bpmn:TextAnnotation') {
+    Object.assign(actions, {
+      'connect': {
+        group: 'connect',
+        className: 'bpmn-icon-connection-multi',
+        title: 'Connect to Element',
+        action: {
+          click: function(event: any, element: any) {
+            connect.start(event, element);
+          }
+        }
+      }
+    });
+  }
+
+  // Actions for other elements to add text annotations
+  if (element.type === 'bpmn:Task' || element.type === 'bpmn:EndEvent' || element.type === 'bpmn:BoundaryEvent' || element.type === 'bpmn:StartEvent') {
+    Object.assign(actions, {
+      'append.text-annotation': appendAction(
+        'bpmn:TextAnnotation', 'bpmn-icon-text-annotation', 'Add Comment', {}
+      )
+    });
+  }
+
+  // Actions for sequence flows to add text annotations
+  if (element.type === 'bpmn:SequenceFlow') {
+    Object.assign(actions, {
+      'append.text-annotation': appendAction(
+        'bpmn:TextAnnotation', 'bpmn-icon-text-annotation', 'Add Comment', {}
+      )
+    });
+  }
+
   // Common actions for all elements
   Object.assign(actions, {
     'delete': {

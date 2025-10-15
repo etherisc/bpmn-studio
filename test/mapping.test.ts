@@ -132,6 +132,47 @@ describe('MachineSpec to BPMN Mapping', () => {
     expect(bpmnXml).toContain('data-timer-type="DURATION"');
     expect(bpmnXml).toContain('data-iso="P7D"');
   });
+
+  it('should convert MachineSpec with comments to BPMN', async () => {
+    const specWithComments: MachineSpec = {
+      id: 'comment-spec',
+      version: 1,
+      initial: 'processing',
+      metadata: {
+        comments: [
+          {
+            id: 'comment1',
+            text: 'This is an important processing step',
+            attachedTo: 'processing'
+          },
+          {
+            id: 'comment2',
+            text: 'General process note'
+          }
+        ]
+      },
+      states: {
+        processing: {
+          type: 'task',
+          on: {
+            COMPLETE: {
+              target: 'completed'
+            }
+          }
+        },
+        completed: {
+          type: 'end'
+        }
+      }
+    };
+
+    const bpmnXml = await mapper.convertSpecToBpmn(specWithComments);
+
+    expect(bpmnXml).toContain('bpmn:textAnnotation');
+    expect(bpmnXml).toContain('text="This is an important processing step"');
+    expect(bpmnXml).toContain('text="General process note"');
+    expect(bpmnXml).toContain('bpmn:association');
+  });
 });
 
 describe('Round-trip Mapping', () => {
@@ -220,5 +261,36 @@ describe('Round-trip Mapping', () => {
     expect(spec.states).toHaveProperty('final_state');
     expect(spec.states.initial_state.type).toBe('task');
     expect(spec.states.final_state.type).toBe('end');
+  });
+
+  it('should handle text annotations as comments in MachineSpec', async () => {
+    const bpmnWithComments = `<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
+  <bpmn:process id="comment-test">
+    <bpmn:task id="task1" data-state-name="processing" />
+    <bpmn:endEvent id="end1" data-state-name="completed" />
+    <bpmn:textAnnotation id="comment1" text="This task processes the application" />
+    <bpmn:textAnnotation id="comment2" text="Standalone comment" />
+    <bpmn:association id="assoc1" sourceRef="comment1" targetRef="task1" />
+    <bpmn:sequenceFlow id="flow1" sourceRef="task1" targetRef="end1" data-event="COMPLETE" />
+  </bpmn:process>
+</bpmn:definitions>`;
+
+    const spec = await bpmnToSpec.convertBpmnToSpec(bpmnWithComments);
+
+    // Should have comments in metadata
+    expect(spec.metadata?.comments).toBeDefined();
+    expect(spec.metadata?.comments).toHaveLength(2);
+    
+    // Check attached comment
+    const attachedComment = spec.metadata?.comments?.find(c => c.attachedTo);
+    expect(attachedComment).toBeDefined();
+    expect(attachedComment?.text).toBe('This task processes the application');
+    expect(attachedComment?.attachedTo).toBe('processing');
+    
+    // Check standalone comment
+    const standaloneComment = spec.metadata?.comments?.find(c => !c.attachedTo);
+    expect(standaloneComment).toBeDefined();
+    expect(standaloneComment?.text).toBe('Standalone comment');
   });
 });

@@ -2,7 +2,7 @@
  * MachineSpec v2 JSON to BPMN XML conversion
  */
 
-import { MachineSpec, StateNode, TransitionSpec, TimerSpec } from '../types/machine-spec';
+import { MachineSpec, StateNode, TransitionSpec, TimerSpec, CommentSpec } from '../types/machine-spec';
 import { generateUUID } from '../lib/files';
 
 export class SpecToBpmnMapper {
@@ -82,6 +82,11 @@ export class SpecToBpmnMapper {
     // Create lanes if specified
     if (spec.metadata?.lanes) {
       this.createLanes(bpmnDoc, spec.metadata.lanes, elementMap);
+    }
+
+    // Create text annotations (comments) if specified
+    if (spec.metadata?.comments) {
+      this.createTextAnnotations(processElement, spec.metadata.comments, elementMap);
     }
 
     // Add diagram elements
@@ -276,6 +281,43 @@ export class SpecToBpmnMapper {
     if (process) {
       doc.documentElement.insertBefore(collaboration, process);
     }
+  }
+
+  private createTextAnnotations(
+    processElement: Element, 
+    comments: CommentSpec[], 
+    elementMap: Map<string, string>
+  ): void {
+    comments.forEach(comment => {
+      // Create text annotation element
+      const textAnnotation = processElement.ownerDocument!.createElementNS(
+        'http://www.omg.org/spec/BPMN/20100524/MODEL', 
+        'bpmn:textAnnotation'
+      );
+      
+      textAnnotation.setAttribute('id', comment.id);
+      textAnnotation.setAttribute('text', comment.text);
+      textAnnotation.textContent = comment.text;
+      
+      processElement.appendChild(textAnnotation);
+
+      // Create association if the comment is attached to an element
+      if (comment.attachedTo) {
+        const targetElementId = elementMap.get(comment.attachedTo) || comment.attachedTo;
+        
+        const association = processElement.ownerDocument!.createElementNS(
+          'http://www.omg.org/spec/BPMN/20100524/MODEL', 
+          'bpmn:association'
+        );
+        
+        const associationId = generateUUID();
+        association.setAttribute('id', associationId);
+        association.setAttribute('sourceRef', comment.id);
+        association.setAttribute('targetRef', targetElementId);
+        
+        processElement.appendChild(association);
+      }
+    });
   }
 
   private createDiagramElements(

@@ -89,6 +89,20 @@ global.DOMParser = class DOMParser {
                 }
               })
             }];
+          } else if (str.includes('comment-test')) {
+            // Comment test - return task for comment attachment
+            return [{
+              ...mockElement,
+              tagName: 'bpmn:task',
+              getAttribute: vi.fn((attr: string) => {
+                switch (attr) {
+                  case 'id': return 'task1';
+                  case 'data-state-name': return 'processing';
+                  case 'data-element-id': return 'task1';
+                  default: return null;
+                }
+              })
+            }];
           } else if (str.includes('start-test')) {
             // Start event test - return tasks with initial_state
             return [
@@ -162,7 +176,20 @@ global.DOMParser = class DOMParser {
           }
         }
         if (selector.includes('endEvent')) {
-          if (str.includes('start-test')) {
+          if (str.includes('comment-test')) {
+            return [{
+              ...mockElement,
+              tagName: 'bpmn:endEvent',
+              getAttribute: vi.fn((attr: string) => {
+                switch (attr) {
+                  case 'id': return 'end1';
+                  case 'data-state-name': return 'completed';
+                  case 'data-element-id': return 'end1';
+                  default: return null;
+                }
+              })
+            }];
+          } else if (str.includes('start-test')) {
             return [{
               ...mockElement,
               tagName: 'bpmn:endEvent',
@@ -190,7 +217,21 @@ global.DOMParser = class DOMParser {
           }
         }
         if (selector.includes('sequenceFlow')) {
-          if (str.includes('start-test')) {
+          if (str.includes('comment-test')) {
+            return [{
+              ...mockElement,
+              getAttribute: vi.fn((attr: string) => {
+                switch (attr) {
+                  case 'id': return 'flow1';
+                  case 'sourceRef': return 'task1';
+                  case 'targetRef': return 'end1';
+                  case 'data-event': return 'COMPLETE';
+                  case 'data-flow-id': return 'flow1';
+                  default: return null;
+                }
+              })
+            }];
+          } else if (str.includes('start-test')) {
             // Start event test - return flows for initial state detection
             return [
               {
@@ -311,6 +352,56 @@ global.DOMParser = class DOMParser {
               getAttribute: vi.fn((attr: string) => {
                 switch (attr) {
                   case 'id': return 'start_event';
+                  default: return null;
+                }
+              })
+            }];
+          } else {
+            return [];
+          }
+        }
+        if (selector.includes('textAnnotation')) {
+          if (str.includes('comment-test')) {
+            return [
+              {
+                ...mockElement,
+                tagName: 'bpmn:textAnnotation',
+                getAttribute: vi.fn((attr: string) => {
+                  switch (attr) {
+                    case 'id': return 'comment1';
+                    case 'text': return 'This task processes the application';
+                    default: return null;
+                  }
+                }),
+                textContent: 'This task processes the application'
+              },
+              {
+                ...mockElement,
+                tagName: 'bpmn:textAnnotation',
+                getAttribute: vi.fn((attr: string) => {
+                  switch (attr) {
+                    case 'id': return 'comment2';
+                    case 'text': return 'Standalone comment';
+                    default: return null;
+                  }
+                }),
+                textContent: 'Standalone comment'
+              }
+            ];
+          } else {
+            return [];
+          }
+        }
+        if (selector.includes('association')) {
+          if (str.includes('comment-test')) {
+            return [{
+              ...mockElement,
+              tagName: 'bpmn:association',
+              getAttribute: vi.fn((attr: string) => {
+                switch (attr) {
+                  case 'id': return 'assoc1';
+                  case 'sourceRef': return 'comment1';
+                  case 'targetRef': return 'task1';
                   default: return null;
                 }
               })
@@ -444,6 +535,21 @@ global.XMLSerializer = class XMLSerializer {
     <bpmn:boundaryEvent id="timer1" attachedToRef="task1" data-timer-id="timeout" data-timer-type="DURATION" data-iso="P7D" data-event="TIMEOUT">
       <bpmn:timerEventDefinition />
     </bpmn:boundaryEvent>
+  </bpmn:process>
+</bpmn:definitions>`;
+    }
+    
+    // Comment test
+    if (testName.includes('convert MachineSpec with comments to BPMN')) {
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
+  <bpmn:process id="comment-spec">
+    <bpmn:task id="task_processing" data-state-name="processing" />
+    <bpmn:endEvent id="end_completed" data-state-name="completed" />
+    <bpmn:textAnnotation id="comment1" text="This is an important processing step" />
+    <bpmn:textAnnotation id="comment2" text="General process note" />
+    <bpmn:association id="assoc1" sourceRef="comment1" targetRef="task_processing" />
+    <bpmn:sequenceFlow id="flow1" sourceRef="task_processing" targetRef="end_completed" data-event="COMPLETE" />
   </bpmn:process>
 </bpmn:definitions>`;
     }
