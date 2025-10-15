@@ -2,9 +2,9 @@ name: Build and Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ docs ]
+    branches: [ docs, develop ]
   pull_request:
-    branches: [ docs ]
+    branches: [ docs, develop ]
   workflow_dispatch:
 
 permissions:
@@ -103,7 +103,7 @@ jobs:
       uses: actions/upload-pages-artifact@v3
 
   deploy:
-    if: github.ref == 'refs/heads/docs'
+    if: github.ref == 'refs/heads/docs' || github.ref == 'refs/heads/develop'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
