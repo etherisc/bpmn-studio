@@ -74,16 +74,21 @@ The Process Editor is built with:
 
 ## Documentation
 
+### 🚀 **Quick Start**
+- **[Examples]({{ site.baseurl }}/examples/)** - Download ready-to-use BPMN and JSON files
+- **[Getting Started]({{ site.baseurl }}/getting-started/)** - Create your first process
+
 ### 📚 **User Guides**
-- **[Getting Started]({{ site.baseurl }}/guides/getting-started/)** - Create your first process
-- **[Process Modeling]({{ site.baseurl }}/guides/process-modeling/)** - Advanced techniques
+- **[Process Modeling]({{ site.baseurl }}/process-modeling/)** - Advanced techniques
+- **[BPMN Elements]({{ site.baseurl }}/bpmn-elements/)** - Complete element guide
+- **[Validation Rules]({{ site.baseurl }}/validation-rules/)** - Rules and error handling
 
 ### 📖 **Reference Documentation**
-- **[BPMN Elements Reference]({{ site.baseurl }}/guides/bpmn-elements/)** - Complete element guide
-- **[MachineSpec Reference]({{ site.baseurl }}/guides/machinespec-reference/)** - JSON format specification
-- **[Validation Reference]({{ site.baseurl }}/guides/validation-reference/)** - Rules and error handling
+- **[MachineSpec Format]({{ site.baseurl }}/machinespec-format/)** - JSON format specification
+- **[MachineSpec Reference]({{ site.baseurl }}/machinespec-reference/)** - Complete API reference
+- **[Validation Reference]({{ site.baseurl }}/validation-reference/)** - Error codes and fixes
 
 ### 🔧 **API Documentation**
-- **[TypeScript Interfaces]({{ site.baseurl }}/api/typescript-interfaces/)** - Type definitions
-- **[JSON Schema]({{ site.baseurl }}/api/json-schema/)** - MachineSpec schema
+- **[TypeScript Interfaces]({{ site.baseurl }}/typescript-interfaces/)** - Type definitions
+- **[JSON Schema]({{ site.baseurl }}/json-schema/)** - MachineSpec schema
 

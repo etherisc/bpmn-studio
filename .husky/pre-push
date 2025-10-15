@@ -16,6 +16,14 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Test check
+echo "🧪 Running tests..."
+npx vitest run
+if [ $? -ne 0 ]; then
+  echo "❌ Tests failed!"
+  exit 1
+fi
+
 # Build check (includes TypeScript compilation)
 echo "🏗️ Testing build..."
 pnpm run build

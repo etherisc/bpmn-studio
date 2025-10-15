@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="process-editor" exporterVersion="1.0.0">
+  <bpmn:process id="timer-workflow" isExecutable="true">
+    <bpmn:startEvent id="start_event" />
+    <bpmn:task id="task_waiting_payment" name="Waiting for Payment" data-state-name="waiting_payment" />
+    <bpmn:task id="task_grace_period" name="Grace Period" data-state-name="grace_period" />
+    <bpmn:endEvent id="end_paid" name="Paid" data-state-name="paid" />
+    <bpmn:endEvent id="end_expired" name="Expired" data-state-name="expired" />
+    
+    <bpmn:sequenceFlow id="flow_start" sourceRef="start_event" targetRef="task_waiting_payment" name="START" data-event="START" />
+    <bpmn:sequenceFlow id="flow_pay" sourceRef="task_waiting_payment" targetRef="end_paid" name="PAY" data-event="PAY" data-actions="recordPayment,sendReceipt" />
+    <bpmn:sequenceFlow id="flow_grace" sourceRef="task_waiting_payment" targetRef="task_grace_period" name="GRACE" data-event="GRACE" />
+    <bpmn:sequenceFlow id="flow_late_pay" sourceRef="task_grace_period" targetRef="end_paid" name="LATE_PAY" data-event="LATE_PAY" data-actions="recordPayment,sendReceipt,addLateFee" />
+    
+    <!-- Payment deadline timer (14 days) -->
+    <bpmn:boundaryEvent id="timer_payment_deadline" attachedToRef="task_waiting_payment" name="Payment Deadline" data-timer-type="DURATION" data-iso="P14D" data-event="PAYMENT_DEADLINE">
+      <bpmn:timerEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="flow_deadline" sourceRef="timer_payment_deadline" targetRef="task_grace_period" name="DEADLINE" data-event="DEADLINE" />
+    
+    <!-- Grace period timer (7 days) -->
+    <bpmn:boundaryEvent id="timer_grace_expired" attachedToRef="task_grace_period" name="Grace Expired" data-timer-type="DURATION" data-iso="P7D" data-event="GRACE_EXPIRED">
+      <bpmn:timerEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="flow_expire" sourceRef="timer_grace_expired" targetRef="end_expired" name="EXPIRE" data-event="EXPIRE" />
+  </bpmn:process>
+  
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="timer-workflow">
+      <bpmndi:BPMNShape id="start_event_di" bpmnElement="start_event">
+        <dc:Bounds x="50" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_waiting_payment_di" bpmnElement="task_waiting_payment">
+        <dc:Bounds x="150" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_grace_period_di" bpmnElement="task_grace_period">
+        <dc:Bounds x="300" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_paid_di" bpmnElement="end_paid">
+        <dc:Bounds x="450" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_expired_di" bpmnElement="end_expired">
+        <dc:Bounds x="450" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="timer_payment_deadline_di" bpmnElement="timer_payment_deadline">
+        <dc:Bounds x="230" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="timer_grace_expired_di" bpmnElement="timer_grace_expired">
+        <dc:Bounds x="380" y="262" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

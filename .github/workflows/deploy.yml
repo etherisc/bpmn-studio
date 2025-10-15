@@ -73,6 +73,13 @@ jobs:
         echo "App copied to _site/app/"
         ls -la _site/app/
 
+    - name: Copy Examples to Jekyll Site
+      run: |
+        mkdir -p _site/examples
+        cp -r examples/* _site/examples/
+        echo "Examples copied to _site/examples/"
+        ls -la _site/examples/
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
 

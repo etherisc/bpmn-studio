@@ -106,8 +106,25 @@ Common validation rules:
 - **Export MachineSpec**: Export as `.machine.json` for your web application
 - **Bundle Export**: ZIP package with BPMN + JSON + manifest
 
+## Try Examples
+
+Want to explore more complex processes? Check out our ready-to-use examples:
+
+### 📄 **Download and Import**
+1. **[Visit Examples Page]({{ site.baseurl }}/examples/)** - Browse all available examples
+2. **Download** both `.bpmn` and `.machine.json` files
+3. **Import** into the editor using "Load BPMN" or "Import Spec"
+4. **Customize** for your specific needs
+
+### 🎯 **Recommended Examples**
+- **[Simple Approval]({{ site.baseurl }}/examples/simple-approval.bpmn)** - Basic approval workflow
+- **[Quote Process]({{ site.baseurl }}/examples/quote-process.bpmn)** - Insurance quote lifecycle
+- **[Swimlane Process]({{ site.baseurl }}/examples/swimlane-process.bpmn)** - Multi-role workflow
+- **[Timer Workflow]({{ site.baseurl }}/examples/timer-workflow.bpmn)** - Advanced timer handling
+
 ## Next Steps
 
-- [Process Modeling Guide]({{ site.baseurl }}/guides/process-modeling/) - Advanced modeling techniques
-- [MachineSpec Format]({{ site.baseurl }}/guides/machinespec-format/) - Understanding the JSON output
-- [Validation Rules]({{ site.baseurl }}/guides/validation-rules/) - Complete rule reference
+- **[Examples]({{ site.baseurl }}/examples/)** - Download ready-to-use process files
+- [Process Modeling Guide]({{ site.baseurl }}/process-modeling/) - Advanced modeling techniques
+- [MachineSpec Format]({{ site.baseurl }}/machinespec-format/) - Understanding the JSON output
+- [Validation Rules]({{ site.baseurl }}/validation-rules/) - Complete rule reference

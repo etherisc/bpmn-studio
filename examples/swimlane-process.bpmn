@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="process-editor" exporterVersion="1.0.0">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_1" name="Insurance Process" processRef="swimlane-process">
+      <bpmn:laneSet id="LaneSet_1">
+        <bpmn:lane id="Lane_Customer" name="Customer" data-lane-name="Customer">
+          <bpmn:flowNodeRef>task_create_quote</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>task_submit_documents</bpmn:flowNodeRef>
+        </bpmn:lane>
+        <bpmn:lane id="Lane_Underwriter" name="Underwriter" data-lane-name="Underwriter">
+          <bpmn:flowNodeRef>task_review_application</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>task_calculate_premium</bpmn:flowNodeRef>
+        </bpmn:lane>
+        <bpmn:lane id="Lane_System" name="System" data-lane-name="System">
+          <bpmn:flowNodeRef>end_policy_issued</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>end_application_rejected</bpmn:flowNodeRef>
+        </bpmn:lane>
+      </bpmn:laneSet>
+    </bpmn:participant>
+  </bpmn:collaboration>
+  
+  <bpmn:process id="swimlane-process" isExecutable="true">
+    <bpmn:startEvent id="start_event" />
+    <bpmn:task id="task_create_quote" name="Create Quote" data-state-name="create_quote" />
+    <bpmn:task id="task_submit_documents" name="Submit Documents" data-state-name="submit_documents" />
+    <bpmn:task id="task_review_application" name="Review Application" data-state-name="review_application" />
+    <bpmn:task id="task_calculate_premium" name="Calculate Premium" data-state-name="calculate_premium" />
+    <bpmn:endEvent id="end_policy_issued" name="Policy Issued" data-state-name="policy_issued" />
+    <bpmn:endEvent id="end_application_rejected" name="Application Rejected" data-state-name="application_rejected" />
+    
+    <bpmn:sequenceFlow id="flow_start" sourceRef="start_event" targetRef="task_create_quote" name="START" data-event="START" />
+    <bpmn:sequenceFlow id="flow_create" sourceRef="task_create_quote" targetRef="task_submit_documents" name="CREATE" data-event="CREATE" />
+    <bpmn:sequenceFlow id="flow_submit" sourceRef="task_submit_documents" targetRef="task_review_application" name="SUBMIT" data-event="SUBMIT" />
+    <bpmn:sequenceFlow id="flow_approve" sourceRef="task_review_application" targetRef="task_calculate_premium" name="APPROVE" data-event="APPROVE" data-guard="isUnderwriter" />
+    <bpmn:sequenceFlow id="flow_reject" sourceRef="task_review_application" targetRef="end_application_rejected" name="REJECT" data-event="REJECT" data-guard="isUnderwriter" />
+    <bpmn:sequenceFlow id="flow_calculate" sourceRef="task_calculate_premium" targetRef="end_policy_issued" name="CALCULATE" data-event="CALCULATE" data-actions="generatePolicy,sendNotification" />
+    
+    <bpmn:boundaryEvent id="timer_review_deadline" attachedToRef="task_review_application" name="Review Deadline" data-timer-type="DURATION" data-iso="P30D" data-event="REVIEW_DEADLINE">
+      <bpmn:timerEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="flow_deadline" sourceRef="timer_review_deadline" targetRef="end_application_rejected" name="DEADLINE" data-event="DEADLINE" />
+  </bpmn:process>
+  
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Participant_1_di" bpmnElement="Participant_1" isHorizontal="true">
+        <dc:Bounds x="50" y="50" width="800" height="600" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Customer_di" bpmnElement="Lane_Customer" isHorizontal="true">
+        <dc:Bounds x="80" y="50" width="770" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Underwriter_di" bpmnElement="Lane_Underwriter" isHorizontal="true">
+        <dc:Bounds x="80" y="250" width="770" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_System_di" bpmnElement="Lane_System" isHorizontal="true">
+        <dc:Bounds x="80" y="450" width="770" height="200" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

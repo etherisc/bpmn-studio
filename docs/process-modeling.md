@@ -115,35 +115,70 @@ Use lanes to group states by responsibility:
 ### Approval Workflow
 
 ```
-created → [SUBMIT] → under_review → [APPROVE/REJECT] → approved/rejected
+submitted → [SUBMIT] → under_review → [APPROVE/REJECT] → approved/rejected
 ```
 
-Key features:
-- Initial state: `created`
+**Key features:**
+- Initial state: `submitted`
 - Review state with timer: `under_review` (P7D timeout)
 - Multiple outcomes: `approved` or `rejected`
+- Guard-protected reviewer actions
 
-### Payment Process
+**📄 Download Example:**
+- [simple-approval.bpmn]({{ site.baseurl }}/examples/simple-approval.bpmn) - Complete BPMN diagram
+- [simple-approval.machine.json]({{ site.baseurl }}/examples/simple-approval.machine.json) - MachineSpec JSON
+
+### Quote Lifecycle Process
 
 ```
-quote_ready → [PAY_FULL] → paid_full → [CLAIM] → claimed → [PAYOUT] → paid_out
+created → [APPROVE] → approved → [READY] → ready_for_collection → [PAY] → paid_full
 ```
 
-Key features:
-- Linear progression
+**Key features:**
+- Linear progression through approval stages
+- Collection timer with expiration (P14D)
 - Action on payment: `recordPayment`
-- Terminal state: `paid_out`
+- Guard conditions for reviewer access
 
-### Collection Process
+**📄 Download Example:**
+- [quote-process.bpmn]({{ site.baseurl }}/examples/quote-process.bpmn) - Complete BPMN diagram
+- [quote-process.machine.json]({{ site.baseurl }}/examples/quote-process.machine.json) - MachineSpec JSON
+
+### Swimlane Organization
 
 ```
-approved → [READY] → ready_for_collection → [COLLECT/EXPIRE] → collected/expired
+Customer:    create_quote → submit_documents
+Underwriter: review_application → calculate_premium  
+System:      policy_issued / application_rejected
 ```
 
-Key features:
-- Timer on `ready_for_collection` (P14D)
-- Two possible outcomes
-- Automatic expiration handling
+**Key features:**
+- Clear role separation with swimlanes
+- Cross-lane transitions
+- 30-day review deadline timer
+- Multiple end states for different outcomes
+
+**📄 Download Example:**
+- [swimlane-process.bpmn]({{ site.baseurl }}/examples/swimlane-process.bpmn) - Complete BPMN diagram
+- [swimlane-process.machine.json]({{ site.baseurl }}/examples/swimlane-process.machine.json) - MachineSpec JSON
+
+### Timer-Based Workflow
+
+```
+waiting_payment → [PAY] → paid
+                → [DEADLINE] → grace_period → [LATE_PAY] → paid
+                                           → [EXPIRE] → expired
+```
+
+**Key features:**
+- Multiple cascading timers (14D → 7D)
+- Grace period handling
+- Different actions for on-time vs late payment
+- Automatic expiration after grace period
+
+**📄 Download Example:**
+- [timer-workflow.bpmn]({{ site.baseurl }}/examples/timer-workflow.bpmn) - Complete BPMN diagram
+- [timer-workflow.machine.json]({{ site.baseurl }}/examples/timer-workflow.machine.json) - MachineSpec JSON
 
 ## Validation Best Practices
 

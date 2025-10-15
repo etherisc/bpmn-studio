@@ -1,0 +1,57 @@
+{
+  "id": "simple-approval",
+  "version": 1,
+  "initial": "submitted",
+  "metadata": {
+    "documentation": "Simple approval process with timeout",
+    "lanes": {
+      "Customer": ["submitted"],
+      "Reviewer": ["under_review"],
+      "System": ["approved", "rejected"]
+    }
+  },
+  "states": {
+    "submitted": {
+      "id": "task_submitted",
+      "type": "task",
+      "on": {
+        "SUBMIT": {
+          "id": "flow_submit",
+          "target": "under_review"
+        }
+      }
+    },
+    "under_review": {
+      "id": "task_under_review",
+      "type": "task",
+      "on": {
+        "APPROVE": {
+          "id": "flow_approve",
+          "target": "approved",
+          "guard": "isReviewer"
+        },
+        "REJECT": {
+          "id": "flow_reject",
+          "target": "rejected",
+          "guard": "isReviewer"
+        }
+      },
+      "timers": [
+        {
+          "id": "timer_review",
+          "type": "DURATION",
+          "iso": "P7D",
+          "event": "REVIEW_TIMEOUT"
+        }
+      ]
+    },
+    "approved": {
+      "id": "end_approved",
+      "type": "end"
+    },
+    "rejected": {
+      "id": "end_rejected",
+      "type": "end"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "id": "timer-workflow",
+  "version": 1,
+  "initial": "waiting_payment",
+  "metadata": {
+    "documentation": "Payment workflow with multiple timers and grace periods"
+  },
+  "states": {
+    "waiting_payment": {
+      "id": "task_waiting_payment",
+      "type": "task",
+      "on": {
+        "PAY": {
+          "id": "flow_pay",
+          "target": "paid",
+          "actions": ["recordPayment", "sendReceipt"]
+        },
+        "GRACE": {
+          "id": "flow_grace",
+          "target": "grace_period"
+        }
+      },
+      "timers": [
+        {
+          "id": "timer_payment_deadline",
+          "type": "DURATION",
+          "iso": "P14D",
+          "event": "PAYMENT_DEADLINE"
+        }
+      ]
+    },
+    "grace_period": {
+      "id": "task_grace_period",
+      "type": "task",
+      "on": {
+        "LATE_PAY": {
+          "id": "flow_late_pay",
+          "target": "paid",
+          "actions": ["recordPayment", "sendReceipt", "addLateFee"]
+        }
+      },
+      "timers": [
+        {
+          "id": "timer_grace_expired",
+          "type": "DURATION",
+          "iso": "P7D",
+          "event": "GRACE_EXPIRED"
+        }
+      ]
+    },
+    "paid": {
+      "id": "end_paid",
+      "type": "end"
+    },
+    "expired": {
+      "id": "end_expired",
+      "type": "end"
+    }
+  }
+}

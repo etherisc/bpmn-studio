@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="process-editor" exporterVersion="1.0.0">
+  <bpmn:process id="simple-approval" isExecutable="true">
+    <bpmn:startEvent id="start_event" />
+    <bpmn:task id="task_submitted" name="Submitted" data-state-name="submitted" />
+    <bpmn:task id="task_under_review" name="Under Review" data-state-name="under_review" />
+    <bpmn:endEvent id="end_approved" name="Approved" data-state-name="approved" />
+    <bpmn:endEvent id="end_rejected" name="Rejected" data-state-name="rejected" />
+    
+    <bpmn:sequenceFlow id="flow_start" sourceRef="start_event" targetRef="task_submitted" name="START" data-event="START" />
+    <bpmn:sequenceFlow id="flow_submit" sourceRef="task_submitted" targetRef="task_under_review" name="SUBMIT" data-event="SUBMIT" />
+    <bpmn:sequenceFlow id="flow_approve" sourceRef="task_under_review" targetRef="end_approved" name="APPROVE" data-event="APPROVE" data-guard="isReviewer" />
+    <bpmn:sequenceFlow id="flow_reject" sourceRef="task_under_review" targetRef="end_rejected" name="REJECT" data-event="REJECT" data-guard="isReviewer" />
+    
+    <bpmn:boundaryEvent id="timer_review" attachedToRef="task_under_review" name="Review Timeout" data-timer-type="DURATION" data-iso="P7D" data-event="REVIEW_TIMEOUT">
+      <bpmn:timerEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="flow_timeout" sourceRef="timer_review" targetRef="end_rejected" name="TIMEOUT" data-event="TIMEOUT" />
+  </bpmn:process>
+  
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="simple-approval">
+      <bpmndi:BPMNShape id="start_event_di" bpmnElement="start_event">
+        <dc:Bounds x="50" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_submitted_di" bpmnElement="task_submitted">
+        <dc:Bounds x="150" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task_under_review_di" bpmnElement="task_under_review">
+        <dc:Bounds x="300" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_approved_di" bpmnElement="end_approved">
+        <dc:Bounds x="450" y="80" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_rejected_di" bpmnElement="end_rejected">
+        <dc:Bounds x="450" y="160" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="timer_review_di" bpmnElement="timer_review">
+        <dc:Bounds x="380" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
