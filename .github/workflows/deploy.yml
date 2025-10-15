@@ -80,6 +80,26 @@ jobs:
         echo "Examples copied to _site/examples/"
         ls -la _site/examples/
 
+    - name: Check for broken links
+      run: |
+        echo "🔍 Checking for broken links in documentation..."
+        
+        # Install htmlproofer for link checking
+        gem install html-proofer
+        
+        # Check internal links, ignore external links to avoid flaky tests
+        # Allow hash links and ignore some common false positives
+        htmlproofer _site \
+          --disable-external \
+          --check-html \
+          --check-img-http \
+          --allow-hash-href \
+          --ignore-urls "/app/,/examples/" \
+          --ignore-files "/app/index.html" \
+          --log-level :info
+        
+        echo "✅ Link check completed successfully!"
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
 
