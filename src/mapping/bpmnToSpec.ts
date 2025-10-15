@@ -56,11 +56,13 @@ export class BpmnToSpecMapper {
 
   private findProcessElement(doc: Document): Element | null {
     // Try different namespaces
-    let process = doc.querySelector('process');
-    if (!process) {
-      process = doc.querySelector('bpmn\\:process, bpmn2\\:process');
+    let processElement = doc.querySelector('process');
+    if (!processElement) {
+      processElement = doc.querySelector('bpmn\\:process, bpmn2\\:process');
     }
-    return process;
+    
+    
+    return processElement;
   }
 
   private extractTasks(processElement: Element): Array<{ id: string, element: Element }> {
@@ -112,9 +114,11 @@ export class BpmnToSpecMapper {
     const boundaryEvents: Array<{ id: string, attachedTo: string, element: Element }> = [];
     const boundaryElements = processElement.querySelectorAll('boundaryEvent, bpmn\\:boundaryEvent, bpmn2\\:boundaryEvent');
     
+    
     boundaryElements.forEach(boundary => {
       const id = boundary.getAttribute('id');
       const attachedTo = boundary.getAttribute('attachedToRef');
+      
       
       if (id && attachedTo) {
         boundaryEvents.push({ id, attachedTo, element: boundary });
@@ -296,6 +300,7 @@ export class BpmnToSpecMapper {
   private buildTimerSpec(boundaryElement: Element, stateName: string): TimerSpec | null {
     const timerType = this.getDataAttribute(boundaryElement, 'data-timer-type') as 'DURATION' | 'DATE';
     const event = this.getDataAttribute(boundaryElement, 'data-event');
+
 
     if (!timerType || !event) {
       return null;
