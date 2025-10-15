@@ -400,8 +400,8 @@ global.DOMParser = class DOMParser {
               getAttribute: vi.fn((attr: string) => {
                 switch (attr) {
                   case 'id': return 'assoc1';
-                  case 'sourceRef': return 'comment1';
-                  case 'targetRef': return 'task1';
+                  case 'sourceRef': return 'task1';
+                  case 'targetRef': return 'comment1';
                   default: return null;
                 }
               })

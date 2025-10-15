@@ -141,12 +141,7 @@ describe('MachineSpec to BPMN Mapping', () => {
       metadata: {
         comments: [
           {
-            id: 'comment1',
-            text: 'This is an important processing step',
-            attachedTo: 'processing'
-          },
-          {
-            id: 'comment2',
+            id: 'standalone_comment',
             text: 'General process note'
           }
         ]
@@ -154,6 +149,12 @@ describe('MachineSpec to BPMN Mapping', () => {
       states: {
         processing: {
           type: 'task',
+          comments: [
+            {
+              id: 'attached_comment',
+              text: 'This is an important processing step'
+            }
+          ],
           on: {
             COMPLETE: {
               target: 'completed'
@@ -169,8 +170,8 @@ describe('MachineSpec to BPMN Mapping', () => {
     const bpmnXml = await mapper.convertSpecToBpmn(specWithComments);
 
     expect(bpmnXml).toContain('bpmn:textAnnotation');
-    expect(bpmnXml).toContain('text="This is an important processing step"');
-    expect(bpmnXml).toContain('text="General process note"');
+    expect(bpmnXml).toContain('This is an important processing step');
+    expect(bpmnXml).toContain('General process note');
     expect(bpmnXml).toContain('bpmn:association');
   });
 });
@@ -271,26 +272,21 @@ describe('Round-trip Mapping', () => {
     <bpmn:endEvent id="end1" data-state-name="completed" />
     <bpmn:textAnnotation id="comment1" text="This task processes the application" />
     <bpmn:textAnnotation id="comment2" text="Standalone comment" />
-    <bpmn:association id="assoc1" sourceRef="comment1" targetRef="task1" />
+    <bpmn:association id="assoc1" sourceRef="task1" targetRef="comment1" />
     <bpmn:sequenceFlow id="flow1" sourceRef="task1" targetRef="end1" data-event="COMPLETE" />
   </bpmn:process>
 </bpmn:definitions>`;
 
     const spec = await bpmnToSpec.convertBpmnToSpec(bpmnWithComments);
 
-    // Should have comments in metadata
+    // Check attached comment is on the processing state
+    expect(spec.states.processing.comments).toBeDefined();
+    expect(spec.states.processing.comments).toHaveLength(1);
+    expect(spec.states.processing.comments![0].text).toBe('This task processes the application');
+    
+    // Check standalone comment is in global metadata
     expect(spec.metadata?.comments).toBeDefined();
-    expect(spec.metadata?.comments).toHaveLength(2);
-    
-    // Check attached comment
-    const attachedComment = spec.metadata?.comments?.find(c => c.attachedTo);
-    expect(attachedComment).toBeDefined();
-    expect(attachedComment?.text).toBe('This task processes the application');
-    expect(attachedComment?.attachedTo).toBe('processing');
-    
-    // Check standalone comment
-    const standaloneComment = spec.metadata?.comments?.find(c => !c.attachedTo);
-    expect(standaloneComment).toBeDefined();
-    expect(standaloneComment?.text).toBe('Standalone comment');
+    expect(spec.metadata?.comments).toHaveLength(1);
+    expect(spec.metadata?.comments![0].text).toBe('Standalone comment');
   });
 });

@@ -42,7 +42,7 @@ export class BpmnToSpecMapper {
     }
 
     // Build states
-    const states = this.buildStates(tasks, endEvents, sequenceFlows, boundaryEvents);
+    const states = this.buildStates(tasks, endEvents, sequenceFlows, boundaryEvents, textAnnotations, associations);
 
     // Build metadata
     const metadata = this.buildMetadata(lanes, tasks, textAnnotations, associations);
@@ -160,9 +160,17 @@ export class BpmnToSpecMapper {
     
     annotationElements.forEach(annotation => {
       const id = annotation.getAttribute('id');
-      const text = annotation.textContent?.trim() || annotation.getAttribute('text') || '';
       
-      if (id) {
+      // Try to get text from child <bpmn:text> element first, then fallback to textContent or attribute
+      let text = '';
+      const textElement = annotation.querySelector('text, bpmn\\:text, bpmn2\\:text');
+      if (textElement) {
+        text = textElement.textContent?.trim() || '';
+      } else {
+        text = annotation.textContent?.trim() || annotation.getAttribute('text') || '';
+      }
+      
+      if (id && text) {
         textAnnotations.push({ id, text, element: annotation });
       }
     });
@@ -240,7 +248,9 @@ export class BpmnToSpecMapper {
     tasks: Array<{ id: string, element: Element }>,
     endEvents: Array<{ id: string, element: Element }>,
     sequenceFlows: Array<{ id: string, source: string, target: string, element: Element }>,
-    boundaryEvents: Array<{ id: string, attachedTo: string, element: Element }>
+    boundaryEvents: Array<{ id: string, attachedTo: string, element: Element }>,
+    textAnnotations: Array<{ id: string, text: string, element: Element }>,
+    associations: Array<{ id: string, source: string, target: string, element: Element }>
   ): Record<string, StateNode> {
     const states: Record<string, StateNode> = {};
 
@@ -293,6 +303,19 @@ export class BpmnToSpecMapper {
         }
       }
 
+      // Add comments from text annotations connected via associations
+      const attachedComments = associations
+        .filter(assoc => assoc.source === task.id) // Task points to annotation
+        .map(assoc => textAnnotations.find(ta => ta.id === assoc.target))
+        .filter(ta => ta) as Array<{ id: string, text: string, element: Element }>;
+      
+      if (attachedComments.length > 0) {
+        state.comments = attachedComments.map(comment => ({
+          id: comment.id,
+          text: comment.text
+        }));
+      }
+
       states[stateName] = state;
     });
 
@@ -306,6 +329,19 @@ export class BpmnToSpecMapper {
         id: existingId || `end_${stateName}`, // Use existing ID or auto-generate
         type: 'end'
       };
+
+      // Add comments from text annotations connected via associations
+      const attachedComments = associations
+        .filter(assoc => assoc.source === endEvent.id) // End event points to annotation
+        .map(assoc => textAnnotations.find(ta => ta.id === assoc.target))
+        .filter(ta => ta) as Array<{ id: string, text: string, element: Element }>;
+      
+      if (attachedComments.length > 0) {
+        state.comments = attachedComments.map(comment => ({
+          id: comment.id,
+          text: comment.text
+        }));
+      }
 
       states[stateName] = state;
     });
@@ -388,28 +424,17 @@ export class BpmnToSpecMapper {
       });
     }
 
-    if (textAnnotations.length > 0) {
-      metadata.comments = textAnnotations.map(annotation => {
-        const comment: CommentSpec = {
-          id: annotation.id,
-          text: annotation.text
-        };
+    // Only include standalone comments (not attached to any element) in global metadata
+    const standaloneComments = textAnnotations.filter(annotation => {
+      // Check if this annotation is connected to any element
+      return !associations.some(assoc => assoc.target === annotation.id);
+    });
 
-        // Find if this annotation is connected to any element via association
-        const association = associations.find(assoc => assoc.source === annotation.id);
-        if (association) {
-          // Map the target element ID to state name if it's a task
-          const targetTask = tasks.find(t => t.id === association.target);
-          if (targetTask) {
-            const stateName = this.getDataAttribute(targetTask.element, 'data-state-name') || targetTask.id;
-            comment.attachedTo = stateName;
-          } else {
-            comment.attachedTo = association.target;
-          }
-        }
-
-        return comment;
-      });
+    if (standaloneComments.length > 0) {
+      metadata.comments = standaloneComments.map(annotation => ({
+        id: annotation.id,
+        text: annotation.text
+      }));
     }
 
     return metadata;

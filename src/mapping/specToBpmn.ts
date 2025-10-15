@@ -27,6 +27,7 @@ export class SpecToBpmnMapper {
 
     // Create tasks and end events
     const elementMap = new Map<string, string>(); // stateName -> elementId
+    const commentMap = new Map<string, string>(); // commentId -> annotationId
     
     Object.entries(spec.states).forEach(([stateName, state]) => {
       const elementId = state.id || generateUUID();
@@ -36,6 +37,16 @@ export class SpecToBpmnMapper {
         this.createEndEvent(processElement, elementId, stateName, state);
       } else {
         this.createTask(processElement, elementId, stateName, state);
+      }
+      
+      // Create text annotations for comments attached to this state
+      if (state.comments && state.comments.length > 0) {
+        state.comments.forEach(comment => {
+          const annotationId = generateUUID();
+          commentMap.set(comment.id, annotationId);
+          this.createTextAnnotation(processElement, annotationId, comment.text);
+          this.createAssociation(processElement, elementId, annotationId);
+        });
       }
       
       positions.set(elementId, { x: currentX, y: currentY });
@@ -84,9 +95,13 @@ export class SpecToBpmnMapper {
       this.createLanes(bpmnDoc, spec.metadata.lanes, elementMap);
     }
 
-    // Create text annotations (comments) if specified
+    // Create standalone text annotations (comments) if specified
     if (spec.metadata?.comments) {
-      this.createTextAnnotations(processElement, spec.metadata.comments, elementMap);
+      spec.metadata.comments.forEach(comment => {
+        const annotationId = generateUUID();
+        this.createTextAnnotation(processElement, annotationId, comment.text);
+        // Standalone comments don't have associations
+      });
     }
 
     // Add diagram elements
@@ -283,41 +298,38 @@ export class SpecToBpmnMapper {
     }
   }
 
-  private createTextAnnotations(
-    processElement: Element, 
-    comments: CommentSpec[], 
-    elementMap: Map<string, string>
-  ): void {
-    comments.forEach(comment => {
-      // Create text annotation element
-      const textAnnotation = processElement.ownerDocument!.createElementNS(
-        'http://www.omg.org/spec/BPMN/20100524/MODEL', 
-        'bpmn:textAnnotation'
-      );
-      
-      textAnnotation.setAttribute('id', comment.id);
-      textAnnotation.setAttribute('text', comment.text);
-      textAnnotation.textContent = comment.text;
-      
-      processElement.appendChild(textAnnotation);
+  private createTextAnnotation(processElement: Element, annotationId: string, text: string): void {
+    const textAnnotation = processElement.ownerDocument!.createElementNS(
+      'http://www.omg.org/spec/BPMN/20100524/MODEL', 
+      'bpmn:textAnnotation'
+    );
+    
+    textAnnotation.setAttribute('id', annotationId);
+    
+    // Create the text child element (proper BPMN structure)
+    const textElement = processElement.ownerDocument!.createElementNS(
+      'http://www.omg.org/spec/BPMN/20100524/MODEL', 
+      'bpmn:text'
+    );
+    textElement.textContent = text;
+    textAnnotation.appendChild(textElement);
+    
+    processElement.appendChild(textAnnotation);
+  }
 
-      // Create association if the comment is attached to an element
-      if (comment.attachedTo) {
-        const targetElementId = elementMap.get(comment.attachedTo) || comment.attachedTo;
-        
-        const association = processElement.ownerDocument!.createElementNS(
-          'http://www.omg.org/spec/BPMN/20100524/MODEL', 
-          'bpmn:association'
-        );
-        
-        const associationId = generateUUID();
-        association.setAttribute('id', associationId);
-        association.setAttribute('sourceRef', comment.id);
-        association.setAttribute('targetRef', targetElementId);
-        
-        processElement.appendChild(association);
-      }
-    });
+  private createAssociation(processElement: Element, sourceElementId: string, targetAnnotationId: string): void {
+    const association = processElement.ownerDocument!.createElementNS(
+      'http://www.omg.org/spec/BPMN/20100524/MODEL', 
+      'bpmn:association'
+    );
+    
+    const associationId = generateUUID();
+    association.setAttribute('id', associationId);
+    association.setAttribute('associationDirection', 'None');
+    association.setAttribute('sourceRef', sourceElementId);
+    association.setAttribute('targetRef', targetAnnotationId);
+    
+    processElement.appendChild(association);
   }
 
   private createDiagramElements(

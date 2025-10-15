@@ -25,6 +25,7 @@ export interface StateNode {
   type?: 'task' | 'end';           // we only use these two in v1
   on?: Record<EventType, TransitionSpec>;
   timers?: TimerSpec[];
+  comments?: CommentSpec[];        // comments attached to this state
   metadata?: Record<string, unknown>;
 }
 
