@@ -13,6 +13,7 @@ import GridModule from 'diagram-js-grid';
 import ProcessPropertiesProviderModule from './ProcessPropertiesProvider';
 import NamingServiceModule from './NamingService';
 import NamingEventHandlerModule from './NamingEventHandler';
+import SwimlaneInitializerModule from './SwimlaneInitializer';
 import { LintingIntegration } from './LintingIntegration';
 import { ValidationIssue } from '../ui/ValidationPane';
 import { AutoSaveService } from '../lib/AutoSaveService';
@@ -48,6 +49,7 @@ export class ModelerHost {
         ProcessPropertiesProviderModule, // Integrated custom properties
         NamingServiceModule, // Auto-naming and synchronization
         NamingEventHandlerModule, // Event handling for naming
+        SwimlaneInitializerModule, // Custom swimlane initialization
       ],
       propertiesPanel: {
         parent: '#properties-panel'

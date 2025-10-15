@@ -1,1 +1,7 @@
-npm test
+echo "🧪 Running tests..."
+npx vitest run
+if [ $? -ne 0 ]; then
+  echo "❌ Tests failed!"
+  exit 1
+fi
+echo "✅ All tests passed!"

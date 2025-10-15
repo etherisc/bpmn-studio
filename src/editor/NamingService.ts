@@ -84,6 +84,29 @@ export class NamingService {
   }
 
   /**
+   * Generate next lane name (Lane 1, Lane 2, etc.)
+   */
+  generateNextLaneName(): string {
+    const allElements = this.elementRegistry.getAll();
+    const laneElements = allElements.filter((el: any) => el.type === 'bpmn:Lane');
+    
+    // Find highest number in existing "Lane X" names
+    let maxNumber = 0;
+    laneElements.forEach((lane: any) => {
+      const name = lane.businessObject.name || '';
+      const match = name.match(/^Lane (\d+)$/);
+      if (match) {
+        const number = parseInt(match[1], 10);
+        if (number > maxNumber) {
+          maxNumber = number;
+        }
+      }
+    });
+
+    return `Lane ${maxNumber + 1}`;
+  }
+
+  /**
    * Convert BPMN name to snake_case state name
    */
   nameToSnakeCase(name: string): string {
@@ -196,6 +219,23 @@ export class NamingService {
   }
 
   /**
+   * Initialize a lane with auto-generated name
+   */
+  initializeLaneNames(element: any): void {
+    const laneName = this.generateNextLaneName();
+
+    // Set lane name
+    this.modeling.updateProperties(element, {
+      name: laneName
+    });
+
+    // Set custom lane name property for bidirectional sync
+    this.modeling.updateProperties(element, {
+      'data-lane-name': laneName
+    });
+  }
+
+  /**
    * Update BPMN name when state name changes
    */
   syncNameFromStateName(element: any, stateName: string): void {
@@ -261,6 +301,24 @@ export class NamingService {
   updateFlowName(element: any, flowName: string): void {
     this.modeling.updateProperties(element, {
       name: flowName
+    });
+  }
+
+  /**
+   * Update BPMN lane name when custom lane name changes
+   */
+  syncLaneNameFromCustomName(element: any, customLaneName: string): void {
+    this.modeling.updateProperties(element, {
+      name: customLaneName
+    });
+  }
+
+  /**
+   * Update custom lane name when BPMN lane name changes
+   */
+  syncCustomNameFromLaneName(element: any, laneName: string): void {
+    this.modeling.updateProperties(element, {
+      'data-lane-name': laneName
     });
   }
 }

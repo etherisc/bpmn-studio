@@ -77,6 +77,12 @@ export class NamingEventHandler {
               this.namingService.updateFlowEventName(element, this.namingService.nameToUpperSnakeCase(bpmnName));
               this.currentEditingElement = null;
             }, 10);
+          } else if (element.type === 'bpmn:Lane') {
+            // Sync custom lane name for lanes (bidirectional)
+            setTimeout(() => {
+              this.namingService.syncCustomNameFromLaneName(element, bpmnName);
+              this.currentEditingElement = null;
+            }, 10);
           }
         }
       }
@@ -115,6 +121,14 @@ export class NamingEventHandler {
       // Always initialize if no event name exists
       if (!element.businessObject.get('data-event')) {
         this.namingService.initializeSequenceFlowNames(element);
+      }
+    }
+
+    // Initialize names for new lanes (handled by SwimlaneInitializer, but add fallback)
+    if (element.type === 'bpmn:Lane') {
+      // Only initialize if no name exists and no custom lane name exists
+      if (!element.businessObject.name && !element.businessObject.get('data-lane-name')) {
+        this.namingService.initializeLaneNames(element);
       }
     }
   }
@@ -171,6 +185,30 @@ export class NamingEventHandler {
         this.isInternalUpdate = true;
         setTimeout(() => {
           this.namingService.updateFlowName(element, flowName);
+          this.isInternalUpdate = false;
+        }, 10);
+      }
+    }
+
+    // For lanes: sync BPMN name when custom lane name changes (bidirectional)
+    if (properties['data-lane-name'] && element.type === 'bpmn:Lane') {
+      if (!this.isInternalUpdate) {
+        const customLaneName = properties['data-lane-name'];
+        this.isInternalUpdate = true;
+        setTimeout(() => {
+          this.namingService.syncLaneNameFromCustomName(element, customLaneName);
+          this.isInternalUpdate = false;
+        }, 10);
+      }
+    }
+
+    // For lanes: sync custom lane name when BPMN name changes (bidirectional)
+    if (properties.name && element.type === 'bpmn:Lane') {
+      if (!this.isInternalUpdate) {
+        const laneName = properties.name;
+        this.isInternalUpdate = true;
+        setTimeout(() => {
+          this.namingService.syncCustomNameFromLaneName(element, laneName);
           this.isInternalUpdate = false;
         }, 10);
       }

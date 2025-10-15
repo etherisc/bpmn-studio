@@ -49,7 +49,7 @@ export class SpecToBpmnMapper {
     // Create sequence flow from Start Event to initial state
     const initialStateId = elementMap.get(spec.initial);
     if (initialStateId) {
-      this.createSequenceFlow(processElement, startEventId, initialStateId, 'START', 'start');
+      this.createSequenceFlow(processElement, startEventId, initialStateId, 'START', { target: spec.initial });
     }
 
     // Create sequence flows

@@ -208,8 +208,10 @@ export class BpmnToSpecMapper {
     tasks.forEach(task => {
       const stateName = this.getDataAttribute(task.element, 'data-state-name') || task.id;
       
+      // Use existing data-element-id if present, otherwise auto-generate
+      const existingId = this.getDataAttribute(task.element, 'data-element-id');
       const state: StateNode = {
-        id: `task_${stateName}`, // Auto-generate ID based on state name
+        id: existingId || `task_${stateName}`, // Use existing ID or auto-generate
         type: 'task'
       };
 
@@ -223,8 +225,10 @@ export class BpmnToSpecMapper {
           if (eventName) {
             const targetStateName = this.getTargetStateName(flow.target, tasks, endEvents);
             if (targetStateName) {
+              // Use existing data-flow-id if present, otherwise auto-generate
+              const existingFlowId = this.getDataAttribute(flow.element, 'data-flow-id');
               const transition: TransitionSpec = { 
-                id: `flow_${stateName}_${eventName.toLowerCase()}`, // Auto-generate flow ID
+                id: existingFlowId || `flow_${stateName}_${eventName.toLowerCase()}`, // Use existing ID or auto-generate
                 target: targetStateName 
               };
               
@@ -243,7 +247,10 @@ export class BpmnToSpecMapper {
       // Add timers from boundary events
       const attachedTimers = boundaryEvents.filter(be => be.attachedTo === task.id);
       if (attachedTimers.length > 0) {
-        state.timers = attachedTimers.map(timer => this.buildTimerSpec(timer.element, stateName)).filter(t => t) as TimerSpec[];
+        const timerSpecs = attachedTimers.map(timer => this.buildTimerSpec(timer.element, stateName)).filter(t => t) as TimerSpec[];
+        if (timerSpecs.length > 0) {
+          state.timers = timerSpecs;
+        }
       }
 
       states[stateName] = state;
@@ -253,8 +260,10 @@ export class BpmnToSpecMapper {
     endEvents.forEach(endEvent => {
       const stateName = this.getDataAttribute(endEvent.element, 'data-state-name') || endEvent.id;
       
+      // Use existing data-element-id if present, otherwise auto-generate
+      const existingId = this.getDataAttribute(endEvent.element, 'data-element-id');
       const state: StateNode = {
-        id: `end_${stateName}`, // Auto-generate ID based on state name
+        id: existingId || `end_${stateName}`, // Use existing ID or auto-generate
         type: 'end'
       };
 
@@ -292,8 +301,10 @@ export class BpmnToSpecMapper {
       return null;
     }
 
+    // Use existing data-timer-id if present, otherwise auto-generate
+    const existingTimerId = this.getDataAttribute(boundaryElement, 'data-timer-id');
     const timer: TimerSpec = {
-      id: `timer_${stateName}_${event.toLowerCase()}`, // Auto-generate timer ID
+      id: existingTimerId || `timer_${stateName}_${event.toLowerCase()}`, // Use existing ID or auto-generate
       type: timerType,
       event
     };
