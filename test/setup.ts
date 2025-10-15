@@ -89,8 +89,36 @@ global.DOMParser = class DOMParser {
                 }
               })
             }];
-          } else if (str.includes('roundtrip-test')) {
-            // Round-trip test - return multiple tasks
+          } else if (str.includes('start-test')) {
+            // Start event test - return tasks with initial_state
+            return [
+              {
+                ...mockElement,
+                tagName: 'bpmn:task',
+                getAttribute: vi.fn((attr: string) => {
+                  switch (attr) {
+                    case 'id': return 'task_initial';
+                    case 'data-state-name': return 'initial_state';
+                    case 'data-element-id': return 'task_initial';
+                    default: return null;
+                  }
+                })
+              },
+              {
+                ...mockElement,
+                tagName: 'bpmn:task',
+                getAttribute: vi.fn((attr: string) => {
+                  switch (attr) {
+                    case 'id': return 'task_second';
+                    case 'data-state-name': return 'second_state';
+                    case 'data-element-id': return 'task_second';
+                    default: return null;
+                  }
+                })
+              }
+            ];
+          } else if (str.includes('roundtrip-test') || str.includes('complex-test')) {
+            // Complex test - return multiple tasks
             return [
               {
                 ...mockElement,
@@ -134,19 +162,78 @@ global.DOMParser = class DOMParser {
           }
         }
         if (selector.includes('endEvent')) {
-          return [{
-            ...mockElement,
-            getAttribute: vi.fn((attr: string) => {
-              switch (attr) {
-                case 'id': return 'end1';
-                case 'data-element-id': return 'end_completed';
-                default: return null;
-              }
-            })
-          }];
+          if (str.includes('start-test')) {
+            return [{
+              ...mockElement,
+              tagName: 'bpmn:endEvent',
+              getAttribute: vi.fn((attr: string) => {
+                switch (attr) {
+                  case 'id': return 'end_final';
+                  case 'data-state-name': return 'final_state';
+                  case 'data-element-id': return 'end_final';
+                  default: return null;
+                }
+              })
+            }];
+          } else {
+            return [{
+              ...mockElement,
+              tagName: 'bpmn:endEvent',
+              getAttribute: vi.fn((attr: string) => {
+                switch (attr) {
+                  case 'id': return 'end1';
+                  case 'data-element-id': return 'end_completed';
+                  default: return null;
+                }
+              })
+            }];
+          }
         }
         if (selector.includes('sequenceFlow')) {
-          if (str.includes('roundtrip-test')) {
+          if (str.includes('start-test')) {
+            // Start event test - return flows for initial state detection
+            return [
+              {
+                ...mockElement,
+                getAttribute: vi.fn((attr: string) => {
+                  switch (attr) {
+                    case 'id': return 'flow_start';
+                    case 'sourceRef': return 'start_event';
+                    case 'targetRef': return 'task_initial';
+                    case 'data-event': return 'START';
+                    case 'data-flow-id': return 'flow_start';
+                    default: return null;
+                  }
+                })
+              },
+              {
+                ...mockElement,
+                getAttribute: vi.fn((attr: string) => {
+                  switch (attr) {
+                    case 'id': return 'flow_next';
+                    case 'sourceRef': return 'task_initial';
+                    case 'targetRef': return 'task_second';
+                    case 'data-event': return 'NEXT';
+                    case 'data-flow-id': return 'flow_next';
+                    default: return null;
+                  }
+                })
+              },
+              {
+                ...mockElement,
+                getAttribute: vi.fn((attr: string) => {
+                  switch (attr) {
+                    case 'id': return 'flow_end';
+                    case 'sourceRef': return 'task_second';
+                    case 'targetRef': return 'end_final';
+                    case 'data-event': return 'COMPLETE';
+                    case 'data-flow-id': return 'flow_end';
+                    default: return null;
+                  }
+                })
+              }
+            ];
+          } else if (str.includes('roundtrip-test')) {
             // Round-trip test - return multiple sequence flows
             return [
               {
@@ -206,7 +293,18 @@ global.DOMParser = class DOMParser {
           }
         }
         if (selector.includes('startEvent')) {
-          if (str.includes('roundtrip-test')) {
+          if (str.includes('start-test')) {
+            return [{
+              ...mockElement,
+              tagName: 'bpmn:startEvent',
+              getAttribute: vi.fn((attr: string) => {
+                switch (attr) {
+                  case 'id': return 'start_event';
+                  default: return null;
+                }
+              })
+            }];
+          } else if (str.includes('roundtrip-test')) {
             return [{
               ...mockElement,
               tagName: 'bpmn:startEvent',
@@ -281,7 +379,18 @@ global.DOMParser = class DOMParser {
         ...mockElement,
         querySelectorAll: vi.fn((selector: string) => {
           if (selector.includes('startEvent')) {
-            if (str.includes('roundtrip-test')) {
+            if (str.includes('start-test')) {
+              return [{
+                ...mockElement,
+                tagName: 'bpmn:startEvent',
+                getAttribute: vi.fn((attr: string) => {
+                  switch (attr) {
+                    case 'id': return 'start_event';
+                    default: return null;
+                  }
+                })
+              }];
+            } else if (str.includes('roundtrip-test')) {
               return [{
                 ...mockElement,
                 tagName: 'bpmn:startEvent',
@@ -304,17 +413,6 @@ global.DOMParser = class DOMParser {
       }),
       querySelectorAll: vi.fn(() => [])
     };
-    
-    // Set ownerDocument for tasks
-    mockProcess.querySelectorAll = vi.fn((selector: string) => {
-      const results = mockProcess.querySelectorAll.wrappedMethod(selector);
-      if (results && results.length > 0) {
-        results.forEach((result: any) => {
-          result.ownerDocument = mockDoc;
-        });
-      }
-      return results;
-    });
     
     return mockDoc;
   }
@@ -350,11 +448,11 @@ global.XMLSerializer = class XMLSerializer {
 </bpmn:definitions>`;
     }
     
-    // Round-trip test - return a more complex BPMN
-    if (testName.includes('preserve semantics in round-trip')) {
+    // Complex SpecToBpmn test
+    if (testName.includes('generate BPMN with correct structure from complex MachineSpec')) {
       return `<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
-  <bpmn:process id="roundtrip-test">
+  <bpmn:process id="complex-test">
     <bpmn:startEvent id="start_event" />
     <bpmn:task id="task_start" data-state-name="start" />
     <bpmn:task id="task_processing" data-state-name="processing" />

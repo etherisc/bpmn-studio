@@ -34,7 +34,7 @@ export class BpmnToSpecMapper {
 
 
     // Find initial state (task with no incoming flows)
-    const initial = this.findInitialState(tasks, sequenceFlows);
+    const initial = this.findInitialState(tasks, sequenceFlows, processElement);
     if (!initial) {
       throw new Error('No initial state found (task with no incoming flows)');
     }
@@ -154,10 +154,11 @@ export class BpmnToSpecMapper {
 
   private findInitialState(
     tasks: Array<{ id: string, element: Element }>, 
-    sequenceFlows: Array<{ id: string, source: string, target: string, element: Element }>
+    sequenceFlows: Array<{ id: string, source: string, target: string, element: Element }>,
+    processElement: Element
   ): string | null {
     // First, check if there's a Start Event pointing to a task
-    const startEvents = this.extractStartEvents(tasks[0]?.element.ownerDocument?.documentElement || document);
+    const startEvents = this.extractStartEvents(processElement);
     if (startEvents.length > 0) {
       const startEvent = startEvents[0];
       const outgoingFlow = sequenceFlows.find(flow => flow.source === startEvent.id);
