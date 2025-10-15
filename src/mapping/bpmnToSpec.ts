@@ -2,7 +2,7 @@
  * BPMN XML to MachineSpec v2 JSON conversion
  */
 
-import { MachineSpec, StateNode, TransitionSpec, TimerSpec, CommentSpec } from '../types/machine-spec';
+import { MachineSpec, StateNode, TransitionSpec, TimerSpec } from '../types/machine-spec';
 
 export class BpmnToSpecMapper {
   
