@@ -320,13 +320,10 @@ global.DOMParser = class DOMParser {
   }
 };
 
-// Track current test context
-let currentTestContext = '';
-
 global.XMLSerializer = class XMLSerializer {
-  serializeToString(doc: any) {
+  serializeToString(_doc: any) {
     // Determine test context from the current test name or other indicators
-    const testName = expect.getState?.()?.currentTestName || '';
+    const testName = (globalThis as any).expect?.getState?.()?.currentTestName || '';
     
     // SpecToBpmn test with APPROVE event
     if (testName.includes('convert simple MachineSpec to BPMN')) {
