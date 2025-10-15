@@ -34,8 +34,7 @@ fi
 echo "🔗 Checking links..."
 htmlproofer _site_test \
     --disable-external \
-    --check-html \
-    --check-img-http \
+    --checks Links,Images,Scripts \
     --allow-hash-href \
     --ignore-urls "/app/" \
     --ignore-files "/app/index.html" \

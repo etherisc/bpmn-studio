@@ -87,12 +87,11 @@ jobs:
         # Install htmlproofer for link checking
         gem install html-proofer
         
-        # Check internal links, ignore external links to avoid flaky tests
-        # Allow hash links and ignore some common false positives
+        # Check internal links with newer htmlproofer syntax
+        # Disable external links to avoid flaky tests
         htmlproofer _site \
           --disable-external \
-          --check-html \
-          --check-img-http \
+          --checks Links,Images,Scripts \
           --allow-hash-href \
           --ignore-urls "/app/,/examples/" \
           --ignore-files "/app/index.html" \
