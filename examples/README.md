@@ -68,3 +68,5 @@ Have a useful process pattern? Consider contributing:
 - 🎯 [Live Demo](https://etherisc.github.io/bpmn-studio/app/)
 - 🐛 [Issues](https://github.com/etherisc/bpmn-studio/issues)
 - 💬 [Discussions](https://github.com/etherisc/bpmn-studio/discussions)
+
+

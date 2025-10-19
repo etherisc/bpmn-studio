@@ -132,3 +132,5 @@ The development server supports hot reload for:
 - ✅ CSS files
 - ✅ HTML templates
 - ❌ Configuration files (requires restart)
+
+

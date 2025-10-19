@@ -24,3 +24,5 @@ The Process Editor generates **MachineSpec v2 JSON** that can be directly import
 - **State Machine Libraries**: XState, Robot, Machina.js
 - **Workflow Engines**: Custom insurance process engines
 - **Validation Systems**: Schema-based validation and type checking
+
+

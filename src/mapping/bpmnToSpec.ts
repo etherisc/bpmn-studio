@@ -303,6 +303,38 @@ export class BpmnToSpecMapper {
         }
       }
 
+      // Add transitions from boundary events (timer outgoing flows)
+      attachedTimers.forEach(timer => {
+        const timerOutgoingFlows = sequenceFlows.filter(flow => flow.source === timer.id);
+        if (timerOutgoingFlows.length > 0) {
+          if (!state.on) state.on = {};
+          
+          // Get the timer event name from the boundary event, not the flow
+          const timerEventName = this.getDataAttribute(timer.element, 'data-event');
+          if (timerEventName) {
+            timerOutgoingFlows.forEach(flow => {
+              const targetStateName = this.getTargetStateName(flow.target, tasks, endEvents);
+              if (targetStateName) {
+                // Use existing data-flow-id if present, otherwise auto-generate
+                const existingFlowId = this.getDataAttribute(flow.element, 'data-flow-id');
+                const transition: TransitionSpec = { 
+                  id: existingFlowId || `flow_${stateName}_${timerEventName.toLowerCase()}`, // Use existing ID or auto-generate
+                  target: targetStateName 
+                };
+                
+                const guard = this.getDataAttribute(flow.element, 'data-guard');
+                const actions = this.getDataAttribute(flow.element, 'data-actions');
+                
+                if (guard) transition.guard = guard;
+                if (actions) transition.actions = actions.split(',').map(a => a.trim()).filter(a => a);
+
+                state.on![timerEventName] = transition;
+              }
+            });
+          }
+        }
+      });
+
       // Add comments from text annotations connected via associations
       const attachedComments = associations
         .filter(assoc => assoc.source === task.id) // Task points to annotation

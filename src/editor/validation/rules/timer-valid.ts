@@ -71,3 +71,5 @@ function isValidIsoDateTime(datetime: string): boolean {
 function isValidEventName(eventName: string): boolean {
   return /^[A-Z][A-Z0-9_]*$/.test(eventName);
 }
+
+

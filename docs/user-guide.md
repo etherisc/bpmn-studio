@@ -58,3 +58,5 @@ The **initial state** is automatically determined as the Task with no incoming s
 **End Events** represent states where the process completes. They cannot have outgoing flows.
 
 Ready to start? Begin with [Getting Started](getting-started/)!
+
+

@@ -16,3 +16,5 @@ declare module '@bpmn-io/properties-panel' {
   export const isTextFieldEntryEdited: any;
   export const isSelectEntryEdited: any;
 }
+
+
